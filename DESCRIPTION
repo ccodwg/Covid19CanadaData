@@ -1,11 +1,23 @@
 Package: Covid19CanadaData
-Type: Package
-Title: What the Package Does (Title Case)
+Title: Download Canadian COVID-19 Data
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Authors@R:
+    person(given = "Jean-Paul R.",
+           family = "Soucy",
+           role = c("aut", "cre"),
+           email = "jeanpaul.r.soucy@gmail.com",
+           comment = c(ORCID = "0000-0002-8422-2326"))
+Description: This package is used to download Canadian COVID-19 data
+    from the following sources:
+    * The COVID-19 Canada Open Data Working Group daily dataset
+    (https://opencovid.ca/).
+    * The Archive of COVID-19 Data from Canadian Government Sources
+    (https://github.com/jeanpaulrsoucy/covid-19-canada-gov-data).
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+Imports: 
+    jsonlite,
+    curl,
+    utils
+RoxygenNote: 7.1.1
