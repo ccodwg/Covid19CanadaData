@@ -40,4 +40,7 @@ after = "2020-03-01", before = "2020-03-15")
 
 # get most recent Canada-wide summary
 dl_ccodwg("summary", loc = "canada")
+
+# get date and time the dataset was last updated
+as.Date(dl_ccodwg("version"))
 ```

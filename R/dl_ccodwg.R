@@ -10,7 +10,8 @@
 #' specifying the `file` argument.
 #'
 #' @param type One of "timeseries" (time series data), "summary" (summary data),
-#' "individual" (individual-level data), or "other" (supplementary files).
+#' "individual" (individual-level data), "other" (supplementary files) or
+#' "version" (date and time dataset was last updated).
 #' @param stat One of "cases", "mortality", "recovered", "testing", "active",
 #' "avaccine", or "dvaccine". Note that not all datasets are available at all
 #' geographic levels.
@@ -36,7 +37,9 @@
 #' dataset as a CSV file (NULL by default, resulting in the dataset being
 #' returned as a data frame).
 #' @return The specified dataset either as a data frame in R (the default) or
-#' written to a CSV file by (by specifying the `file` argument).
+#' written to a CSV file by (by specifying the `file` argument). If
+#' type = "version", the date and time the dataset were last updated is returned
+#' as a character string.
 #' @examples
 #' # get case time series for Toronto during the first half of March 2020
 #' dl_ccodwg("timeseries", "cases", loc = 3595,
@@ -44,8 +47,12 @@
 #'
 #' # get most recent Canada-wide summary
 #' dl_ccodwg("summary", loc = "canada")
+#'
+#' # get date the dataset was last updated
+#' as.Date(dl_ccodwg("version"))
 #' @export
-dl_ccodwg <- function(type = c("timeseries", "individual", "summary", "other"),
+dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
+                               "other", "version"),
                       stat = c("cases", "mortality", "recovered", "testing",
                                "active", "avaccine", "dvaccine"),
                       loc = c("default", "canada", "prov", "hr"),
@@ -60,7 +67,8 @@ dl_ccodwg <- function(type = c("timeseries", "individual", "summary", "other"),
 
   # verify type argument
   match.arg(type,
-            choices = c("timeseries", "summary", "individual", "other"),
+            choices = c("timeseries", "summary", "individual",
+                        "other", "version"),
             several.ok = FALSE)
 
   # process arguments
@@ -107,15 +115,24 @@ dl_ccodwg <- function(type = c("timeseries", "individual", "summary", "other"),
     stop("Individual-level data not yet available in this package.")
   } else if (type == "other") {
     stop("Other files not yet available in this package.")
+  } else if (type == "version") {
+    api_call <- api_ccodwg(type)
+    dat <- jsonlite::fromJSON(api_call)[[1]]
   }
   # print API call
   if (verbose) {
     cat(api_call, fill = TRUE)
   }
-  # convert missing values from "NULL" to NA
-  if (missing_to_na) {
-    dat[dat == "NULL"] <- NA
+
+  # final processing
+  if (type != "version") {
+    # convert missing values from "NULL" to NA
+    if (missing_to_na) {
+      dat[dat == "NULL"] <- NA
+    }
   }
+
+  # return data
   return(dat)
 
 }

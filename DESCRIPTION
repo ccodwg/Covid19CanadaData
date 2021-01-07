@@ -1,6 +1,6 @@
 Package: Covid19CanadaData
 Title: Download Canadian COVID-19 Data
-Version: 0.1.0
+Version: 0.1.5
 Authors@R:
     person(given = "Jean-Paul R.",
            family = "Soucy",

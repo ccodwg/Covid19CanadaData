@@ -8,7 +8,8 @@ api_ccodwg(type, args_list)
 }
 \arguments{
 \item{type}{One of "timeseries" (time series data), "summary" (summary data),
-"individual" (individual-level data),  or "other" (supplementary files).}
+"individual" (individual-level data), "other" (supplementary files) or
+"version" (date and time dataset was last updated).}
 
 \item{args_list}{A list of API arguments for the selected data type.}
 }

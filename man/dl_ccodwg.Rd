@@ -5,7 +5,7 @@
 \title{Download data from the COVID-19 Canada Open Data Working Group dataset}
 \usage{
 dl_ccodwg(
-  type = c("timeseries", "individual", "summary", "other"),
+  type = c("timeseries", "individual", "summary", "other", "version"),
   stat = c("cases", "mortality", "recovered", "testing", "active", "avaccine",
     "dvaccine"),
   loc = c("default", "canada", "prov", "hr"),
@@ -21,7 +21,8 @@ dl_ccodwg(
 }
 \arguments{
 \item{type}{One of "timeseries" (time series data), "summary" (summary data),
-"individual" (individual-level data), or "other" (supplementary files).}
+"individual" (individual-level data), "other" (supplementary files) or
+"version" (date and time dataset was last updated).}
 
 \item{stat}{One of "cases", "mortality", "recovered", "testing", "active",
 "avaccine", or "dvaccine". Note that not all datasets are available at all
@@ -59,7 +60,9 @@ returned as a data frame).}
 }
 \value{
 The specified dataset either as a data frame in R (the default) or
-written to a CSV file by (by specifying the `file` argument).
+written to a CSV file by (by specifying the `file` argument). If
+type = "version", the date and time the dataset were last updated is returned
+as a character string.
 }
 \description{
 Download data from the COVID-19 Canada Open Data Working Group dataset via
@@ -79,4 +82,7 @@ after = "2020-03-01", before = "2020-03-15")
 
 # get most recent Canada-wide summary
 dl_ccodwg("summary", loc = "canada")
+
+# get date the dataset was last updated
+as.Date(dl_ccodwg("version"))
 }

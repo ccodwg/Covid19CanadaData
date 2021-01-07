@@ -21,26 +21,32 @@ get_hr_ids <- function() {
 #' specified arguments.
 #'
 #' @param type One of "timeseries" (time series data), "summary" (summary data),
-#' "individual" (individual-level data),  or "other" (supplementary files).
+#' "individual" (individual-level data), "other" (supplementary files) or
+#' "version" (date and time dataset was last updated).
 #' @param args_list A list of API arguments for the selected data type.
 #' @return A character string representing the API call with the specified
 #' arguments.
 api_ccodwg <- function(type, args_list) {
 
-  # get arguments
-  args_vals <- unlist(mget(args_list, envir = parent.frame()))
+  if (!missing(args_list)) {
+    # get arguments
+    args_vals <- unlist(mget(args_list, envir = parent.frame()))
 
-  # process arguments
-  if (args_vals[["loc"]] == "default") args_vals[["loc"]] <- NA
+    # process arguments
+    if (args_vals[["loc"]] == "default") args_vals[["loc"]] <- NA
 
-  # generate API call
-  args_vals <- as.character(args_vals)
-  args_names <- args_list[!is.na(args_vals)]
-  args_vals <- args_vals[!is.na(args_vals)]
-  args_string <- paste(
-    paste(args_names, args_vals, sep = "="),
-    collapse = "&")
-  paste0(
-    "https://api.opencovid.ca/", type, "?", args_string
-  )
+    # generate API call
+    args_vals <- as.character(args_vals)
+    args_names <- args_list[!is.na(args_vals)]
+    args_vals <- args_vals[!is.na(args_vals)]
+    args_string <- paste(
+      paste(args_names, args_vals, sep = "="),
+      collapse = "&")
+    paste0(
+      "https://api.opencovid.ca/", type, "?", args_string
+    )
+  } else {
+    paste0("https://api.opencovid.ca/", type)
+  }
+
 }
