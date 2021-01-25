@@ -8,7 +8,7 @@ dl_ccodwg(
   type = c("timeseries", "individual", "summary", "other", "version"),
   stat = c("cases", "mortality", "recovered", "testing", "active", "avaccine",
     "dvaccine", "cvaccine"),
-  loc = c("default", "canada", "prov", "hr"),
+  loc = "default",
   date = NA,
   after = NA,
   before = NA,
@@ -61,7 +61,7 @@ returned as a data frame).}
 }
 \value{
 The specified dataset either as a data frame in R (the default) or
-written to a CSV file by (by specifying the `file` argument). If
+written to a CSV file by (by specifying the argument `file`). If
 type = "version", the date and time the dataset were last updated is returned
 as a character string.
 }

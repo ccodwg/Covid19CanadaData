@@ -38,7 +38,7 @@
 #' dataset as a CSV file (NULL by default, resulting in the dataset being
 #' returned as a data frame).
 #' @return The specified dataset either as a data frame in R (the default) or
-#' written to a CSV file by (by specifying the `file` argument). If
+#' written to a CSV file by (by specifying the argument `file`). If
 #' type = "version", the date and time the dataset were last updated is returned
 #' as a character string.
 #' @examples
@@ -53,9 +53,17 @@
 #' @export
 dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
                                "other", "version"),
-                      stat = c("cases", "mortality", "recovered", "testing",
-                               "active", "avaccine", "dvaccine", "cvaccine"),
-                      loc = c("default", "canada", "prov", "hr"),
+                      stat = c(
+                        "cases",
+                        "mortality",
+                        "recovered",
+                        "testing",
+                        "active",
+                        "avaccine",
+                        "dvaccine",
+                        "cvaccine"
+                      ),
+                      loc = "default",
                       date = NA,
                       after = NA,
                       before = NA,
@@ -135,8 +143,12 @@ dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
     cat(api_call, fill = TRUE)
   }
 
-  # return data
-  return(dat)
+  # write data (if file is specified) else return data
+  if (!is.null(file)) {
+    utils::write.csv(dat, file = file, row.names = FALSE)
+  } else {
+    return(dat)
+  }
 
 }
 
