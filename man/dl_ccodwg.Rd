@@ -24,15 +24,13 @@ dl_ccodwg(
 "individual" (individual-level data), "other" (supplementary files) or
 "version" (date and time dataset was last updated).}
 
-\item{stat}{Which statistic to return. One of "cases", "mortality",
-"recovered", "testing", "active", "avaccine", "dvaccine" or "cavvacine".
-Note that not all datasets are available at all geographic levels.}
+\item{stat}{Which statistic to return. See details.}
 
-\item{loc}{The geographic level of the data. One of "default", "canada",
-"prov", "hr", a two-letter province code or a health region code. Not all
-geographic levels are available for all datasets. See API documentation for
-all possible values. If NA, the default value for the specified dataset will
-be used.}
+\item{loc}{The geographic level of the data. Required for types "timeseries",
+"summary" and "individual". One of "default", "canada", "prov", "hr",
+a two-letter province code or a health region code. Not all geographic levels
+are available for all datasets. See API documentation for all possible
+values. If NA, the default value for the specified dataset will be used.}
 
 \item{date}{A character string specifying the date of data to return.
 Use either YYYY-MM-DD or DD-MM-YYYY format.}
@@ -69,12 +67,20 @@ as a character string.
 Download data from the COVID-19 Canada Open Data Working Group dataset via
 the JSON API. Pre-processing of the data may be done by specifying the
 relevant arguments in the function which are then passed to the API call.
+Data can either be imported into R (the default) or written to a CSV file by
+specifying the `file` argument. Full documentation of the API is available
+here: https://opencovid.ca/api/
 }
 \details{
-Full documentation of the API is available here: https://opencovid.ca/api/
+The values for stat depend on the type of data desired. Note that
+only one value for stat are accepted per query:
 
-Data can either be imported into R (the default) or written to a CSV file by
-specifying the `file` argument.
+timeseries: "cases", "mortality", "recovered", "testing", "active",
+"avaccine", "dvaccine", "cvaccine"
+
+Note that not all datasets are available at all geographic levels (loc).
+
+other: "prov", "hr", "age_cases", "age_mortality"
 }
 \examples{
 # get case time series for Toronto during the first half of March 2020
@@ -82,6 +88,9 @@ dl_ccodwg("timeseries", "cases", loc = 3595, after = "2020-03-01", before = "202
 
 # get most recent Canada-wide summary
 dl_ccodwg("summary", loc = "canada")
+
+# get list of province names and population values
+dl_ccodwg("other", "prov")
 
 # get date the dataset was last updated
 as.Date(dl_ccodwg("version"))

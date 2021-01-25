@@ -14,7 +14,7 @@ As a basic toolbox for accessing the COVID-19 Canada Open Data Working Group dat
 This package is not currently completely functional. For now, only the following functionality is available:
 
 * Access to most CCODWG core datasets via the JSON API. Currently, only the time
-series and summary datasets are available.
+series, summary and supplementary (other) datasets are available.
 * Access to the Archive of COVID-19 Data from Canadian Government Sources has
 not yet been implemented.
 
@@ -39,6 +39,9 @@ dl_ccodwg("timeseries", "cases", loc = 3595, after = "2020-03-01", before = "202
 
 # get most recent Canada-wide summary
 dl_ccodwg("summary", loc = "canada")
+
+# get list of province names and population values
+dl_ccodwg("other", "prov")
 
 # get date the CCODWG dataset was last updated
 ccodwg_update_date()

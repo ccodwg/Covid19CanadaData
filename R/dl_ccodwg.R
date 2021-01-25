@@ -3,23 +3,19 @@
 #' Download data from the COVID-19 Canada Open Data Working Group dataset via
 #' the JSON API. Pre-processing of the data may be done by specifying the
 #' relevant arguments in the function which are then passed to the API call.
-#'
-#' Full documentation of the API is available here: https://opencovid.ca/api/
-#'
 #' Data can either be imported into R (the default) or written to a CSV file by
-#' specifying the `file` argument.
+#' specifying the `file` argument. Full documentation of the API is available
+#' here: https://opencovid.ca/api/
 #'
 #' @param type One of "timeseries" (time series data), "summary" (summary data),
 #' "individual" (individual-level data), "other" (supplementary files) or
 #' "version" (date and time dataset was last updated).
-#' @param stat Which statistic to return. One of "cases", "mortality",
-#' "recovered", "testing", "active", "avaccine", "dvaccine" or "cavvacine".
-#' Note that not all datasets are available at all geographic levels.
-#' @param loc The geographic level of the data. One of "default", "canada",
-#' "prov", "hr", a two-letter province code or a health region code. Not all
-#' geographic levels are available for all datasets. See API documentation for
-#' all possible values. If NA, the default value for the specified dataset will
-#' be used.
+#' @param stat Which statistic to return. See details.
+#' @param loc The geographic level of the data. Required for types "timeseries",
+#' "summary" and "individual". One of "default", "canada", "prov", "hr",
+#' a two-letter province code or a health region code. Not all geographic levels
+#' are available for all datasets. See API documentation for all possible
+#' values. If NA, the default value for the specified dataset will be used.
 #' @param date A character string specifying the date of data to return.
 #' Use either YYYY-MM-DD or DD-MM-YYYY format.
 #' @param after A character string specifying that data from this date or later
@@ -41,12 +37,24 @@
 #' written to a CSV file by (by specifying the argument `file`). If
 #' type = "version", the date and time the dataset were last updated is returned
 #' as a character string.
+#' @details The values for stat depend on the type of data desired. Note that
+#' only one value for stat are accepted per query:
+#'
+#' timeseries: "cases", "mortality", "recovered", "testing", "active",
+#' "avaccine", "dvaccine", "cvaccine"
+#'
+#' Note that not all datasets are available at all geographic levels (loc).
+#'
+#' other: "prov", "hr", "age_cases", "age_mortality"
 #' @examples
 #' # get case time series for Toronto during the first half of March 2020
 #' dl_ccodwg("timeseries", "cases", loc = 3595, after = "2020-03-01", before = "2020-03-15")
 #'
 #' # get most recent Canada-wide summary
 #' dl_ccodwg("summary", loc = "canada")
+#'
+#' # get list of province names and population values
+#' dl_ccodwg("other", "prov")
 #'
 #' # get date the dataset was last updated
 #' as.Date(dl_ccodwg("version"))
@@ -92,13 +100,13 @@ dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
   # download data
   if (type == "timeseries") {
     ## verify arguments
-    if (length(stat) > 1) {
-      stop("Only a single 'stat' may be specified.")
-    }
     match.arg(stat,
               choices = c("cases", "mortality", "recovered", "testing",
                           "active", "avaccine", "dvaccine", "cvaccine"),
               several.ok = FALSE)
+    if (length(stat) > 1) {
+      stop("Only a single 'stat' may be specified.")
+    }
     if (stat %in% c("cases", "mortality")) {
       match.arg(loc,
                 choices = c("default", "canada", "prov", "hr",
@@ -131,7 +139,16 @@ dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
     stop("Individual-level data not yet available in this package.")
 
   } else if (type == "other") {
-    stop("Other files not yet available in this package.")
+    ## verify arguments
+    match.arg(stat,
+              choices = c("prov", "hr", "age_cases", "age_mortality"),
+              several.ok = FALSE)
+    if (length(stat) > 1) {
+      stop("Only a single 'stat' may be specified.")
+    }
+    api_call <- api_ccodwg(type,
+                           c("stat", "missing"))
+    dat <- jsonlite::fromJSON(api_call)[[1]]
 
   } else if (type == "version") {
     api_call <- api_ccodwg(type)
