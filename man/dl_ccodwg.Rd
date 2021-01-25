@@ -7,14 +7,14 @@
 dl_ccodwg(
   type = c("timeseries", "individual", "summary", "other", "version"),
   stat = c("cases", "mortality", "recovered", "testing", "active", "avaccine",
-    "dvaccine"),
+    "dvaccine", "cvaccine"),
   loc = c("default", "canada", "prov", "hr"),
   date = NA,
   after = NA,
   before = NA,
   ymd = "true",
+  missing = "na",
   extra = "true",
-  missing_to_na = TRUE,
   verbose = FALSE,
   file = NULL
 )
@@ -24,14 +24,15 @@ dl_ccodwg(
 "individual" (individual-level data), "other" (supplementary files) or
 "version" (date and time dataset was last updated).}
 
-\item{stat}{One of "cases", "mortality", "recovered", "testing", "active",
-"avaccine", or "dvaccine". Note that not all datasets are available at all
-geographic levels.}
+\item{stat}{Which statistic to return. One of "cases", "mortality",
+"recovered", "testing", "active", "avaccine", "dvaccine" or "cavvacine".
+Note that not all datasets are available at all geographic levels.}
 
-\item{loc}{One of "default", "canada", "prov", "hr", a two-letter province
-code or a health region code. Not all geographic levels are available for all
-datasets. See API documentation for all possible values.
-If NA, the default value for the specified dataset will be used.}
+\item{loc}{The geographic level of the data. One of "default", "canada",
+"prov", "hr", a two-letter province code or a health region code. Not all
+geographic levels are available for all datasets. See API documentation for
+all possible values. If NA, the default value for the specified dataset will
+be used.}
 
 \item{date}{A character string specifying the date of data to return.
 Use either YYYY-MM-DD or DD-MM-YYYY format.}
@@ -45,12 +46,12 @@ earlier should be returned. Use either YYYY-MM-DD or DD-MM-YYYY format.}
 \item{ymd}{One of "true" or "false". Should dates be returned in YYYY-MM-DD
 format? Default = "true". Otherwise, dates are returned in DD-MM-YYYY format.}
 
+\item{missing}{How should missing values be returned? One of "null", "na",
+"nan" or "empty". Default = "na". This reads into R as NA.}
+
 \item{extra}{One of "true" or "false". For individual-level data, should
 abbreviated columns be joined? (E.g., "case_source" for individual-level
 case data) Default = "true".}
-
-\item{missing_to_na}{Logical. Convert missing values to NA? By default, the
-API returns missing values as "NULL". Default = TRUE.}
 
 \item{verbose}{Logical. Print debug messages?}
 
@@ -77,8 +78,7 @@ specifying the `file` argument.
 }
 \examples{
 # get case time series for Toronto during the first half of March 2020
-dl_ccodwg("timeseries", "cases", loc = 3595,
-after = "2020-03-01", before = "2020-03-15")
+dl_ccodwg("timeseries", "cases", loc = 3595, after = "2020-03-01", before = "2020-03-15")
 
 # get most recent Canada-wide summary
 dl_ccodwg("summary", loc = "canada")

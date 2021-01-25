@@ -12,13 +12,14 @@
 #' @param type One of "timeseries" (time series data), "summary" (summary data),
 #' "individual" (individual-level data), "other" (supplementary files) or
 #' "version" (date and time dataset was last updated).
-#' @param stat One of "cases", "mortality", "recovered", "testing", "active",
-#' "avaccine", or "dvaccine". Note that not all datasets are available at all
-#' geographic levels.
-#' @param loc One of "default", "canada", "prov", "hr", a two-letter province
-#' code or a health region code. Not all geographic levels are available for all
-#' datasets. See API documentation for all possible values.
-#' If NA, the default value for the specified dataset will be used.
+#' @param stat Which statistic to return. One of "cases", "mortality",
+#' "recovered", "testing", "active", "avaccine", "dvaccine" or "cavvacine".
+#' Note that not all datasets are available at all geographic levels.
+#' @param loc The geographic level of the data. One of "default", "canada",
+#' "prov", "hr", a two-letter province code or a health region code. Not all
+#' geographic levels are available for all datasets. See API documentation for
+#' all possible values. If NA, the default value for the specified dataset will
+#' be used.
 #' @param date A character string specifying the date of data to return.
 #' Use either YYYY-MM-DD or DD-MM-YYYY format.
 #' @param after A character string specifying that data from this date or later
@@ -27,11 +28,11 @@
 #' earlier should be returned. Use either YYYY-MM-DD or DD-MM-YYYY format.
 #' @param ymd One of "true" or "false". Should dates be returned in YYYY-MM-DD
 #' format? Default = "true". Otherwise, dates are returned in DD-MM-YYYY format.
+#' @param missing How should missing values be returned? One of "null", "na",
+#' "nan" or "empty". Default = "na". This reads into R as NA.
 #' @param extra One of "true" or "false". For individual-level data, should
 #' abbreviated columns be joined? (E.g., "case_source" for individual-level
 #' case data) Default = "true".
-#' @param missing_to_na Logical. Convert missing values to NA? By default, the
-#' API returns missing values as "NULL". Default = TRUE.
 #' @param verbose Logical. Print debug messages?
 #' @param file A character string specifying the location to write the specified
 #' dataset as a CSV file (NULL by default, resulting in the dataset being
@@ -42,8 +43,7 @@
 #' as a character string.
 #' @examples
 #' # get case time series for Toronto during the first half of March 2020
-#' dl_ccodwg("timeseries", "cases", loc = 3595,
-#' after = "2020-03-01", before = "2020-03-15")
+#' dl_ccodwg("timeseries", "cases", loc = 3595, after = "2020-03-01", before = "2020-03-15")
 #'
 #' # get most recent Canada-wide summary
 #' dl_ccodwg("summary", loc = "canada")
@@ -54,14 +54,14 @@
 dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
                                "other", "version"),
                       stat = c("cases", "mortality", "recovered", "testing",
-                               "active", "avaccine", "dvaccine"),
+                               "active", "avaccine", "dvaccine", "cvaccine"),
                       loc = c("default", "canada", "prov", "hr"),
                       date = NA,
                       after = NA,
                       before = NA,
                       ymd = "true",
+                      missing = "na",
                       extra = "true",
-                      missing_to_na = TRUE,
                       verbose = FALSE,
                       file = NULL) {
 
@@ -69,6 +69,13 @@ dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
   match.arg(type,
             choices = c("timeseries", "summary", "individual",
                         "other", "version"),
+            several.ok = FALSE)
+  # verify formatting arguments
+  match.arg(ymd,
+            choices = c("true", "false"),
+            several.ok = FALSE)
+  match.arg(missing,
+            choices = c("null", "na", "nan", "empty"),
             several.ok = FALSE)
 
   # process arguments
@@ -82,7 +89,7 @@ dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
     }
     match.arg(stat,
               choices = c("cases", "mortality", "recovered", "testing",
-                          "active", "avaccine", "dvaccine"),
+                          "active", "avaccine", "dvaccine", "cvaccine"),
               several.ok = FALSE)
     if (stat %in% c("cases", "mortality")) {
       match.arg(loc,
@@ -95,11 +102,10 @@ dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
                             get_prov_names()),
                 several.ok = FALSE)
     }
-    match.arg(ymd,
-              choices = c("true", "false"),
-              several.ok = FALSE)
     api_call <- api_ccodwg(type,
-      c("stat", "loc", "date", "after", "before", "ymd"))
+      c("stat", "loc", "date",
+        "after", "before", "ymd",
+        "missing"))
     dat <- jsonlite::fromJSON(api_call)[[1]]
 
   } else if (type == "summary") {
@@ -109,27 +115,24 @@ dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
                           get_prov_names(), get_hr_ids()),
               several.ok = FALSE)
     api_call <- api_ccodwg(type,
-                           c("loc", "date", "after", "before", "ymd"))
+                           c("loc", "date", "after",
+                             "before", "ymd", "missing"))
     dat <- jsonlite::fromJSON(api_call)[[1]]
+
   } else if (type == "individual") {
     stop("Individual-level data not yet available in this package.")
+
   } else if (type == "other") {
     stop("Other files not yet available in this package.")
+
   } else if (type == "version") {
     api_call <- api_ccodwg(type)
     dat <- jsonlite::fromJSON(api_call)[[1]]
   }
+
   # print API call
   if (verbose) {
     cat(api_call, fill = TRUE)
-  }
-
-  # final processing
-  if (type != "version") {
-    # convert missing values from "NULL" to NA
-    if (missing_to_na) {
-      dat[dat == "NULL"] <- NA
-    }
   }
 
   # return data
@@ -141,7 +144,7 @@ dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
 #'
 #' This is a simple convenience function to return the date portion of a
 #' "version" call to the API.
-#' @example
+#' @examples
 #' # get date the CCODWG dataset was last updated
 #' ccodwg_update_date()
 #' @export

@@ -35,12 +35,11 @@ Below are some example commands for downloading data from the COVID-19 Canada Op
 
 ``` r
 # get case time series for Toronto during the first half of March 2020
-dl_ccodwg("timeseries", "cases", loc = 3595,
-after = "2020-03-01", before = "2020-03-15")
+dl_ccodwg("timeseries", "cases", loc = 3595, after = "2020-03-01", before = "2020-03-15")
 
 # get most recent Canada-wide summary
 dl_ccodwg("summary", loc = "canada")
 
-# get date and time the dataset was last updated
-as.Date(dl_ccodwg("version"))
+# get date the CCODWG dataset was last updated
+ccodwg_update_date()
 ```

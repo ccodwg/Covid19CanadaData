@@ -10,3 +10,7 @@ ccodwg_update_date()
 This is a simple convenience function to return the date portion of a
 "version" call to the API.
 }
+\examples{
+# get date the CCODWG dataset was last updated
+ccodwg_update_date()
+}
