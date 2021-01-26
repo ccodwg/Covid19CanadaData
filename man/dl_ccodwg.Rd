@@ -15,6 +15,7 @@ dl_ccodwg(
   ymd = "true",
   missing = "na",
   extra = "true",
+  dateonly = "false",
   verbose = FALSE,
   file = NULL
 )
@@ -50,6 +51,9 @@ format? Default = "true". Otherwise, dates are returned in DD-MM-YYYY format.}
 \item{extra}{One of "true" or "false". For individual-level data, should
 abbreviated columns be joined? (E.g., "case_source" for individual-level
 case data) Default = "true".}
+
+\item{dateonly}{One of "true" or "false". Should version return only the
+update date or the full date and time of the update? Default = "false".}
 
 \item{verbose}{Logical. Print debug messages?}
 

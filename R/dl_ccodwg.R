@@ -29,6 +29,8 @@
 #' @param extra One of "true" or "false". For individual-level data, should
 #' abbreviated columns be joined? (E.g., "case_source" for individual-level
 #' case data) Default = "true".
+#' @param dateonly One of "true" or "false". Should version return only the
+#' update date or the full date and time of the update? Default = "false".
 #' @param verbose Logical. Print debug messages?
 #' @param file A character string specifying the location to write the specified
 #' dataset as a CSV file (NULL by default, resulting in the dataset being
@@ -78,6 +80,7 @@ dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
                       ymd = "true",
                       missing = "na",
                       extra = "true",
+                      dateonly = "false",
                       verbose = FALSE,
                       file = NULL) {
 
@@ -151,7 +154,12 @@ dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
     dat <- jsonlite::fromJSON(api_call)[[1]]
 
   } else if (type == "version") {
-    api_call <- api_ccodwg(type)
+    ## verify arguments
+    match.arg(dateonly,
+              choices = c("true", "false"),
+              several.ok = FALSE)
+    api_call <- api_ccodwg(type,
+                           c("dateonly"))
     dat <- jsonlite::fromJSON(api_call)[[1]]
   }
 
@@ -178,5 +186,5 @@ dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
 #' ccodwg_update_date()
 #' @export
 ccodwg_update_date <- function(){
-  as.Date(dl_ccodwg("version"))
+  as.Date(dl_ccodwg("version", dateonly = "true"))
 }
