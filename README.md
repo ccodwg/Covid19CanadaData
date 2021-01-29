@@ -54,7 +54,7 @@ ccodwg_update_date()
 
 ### Archive of Canadian COVID-19 Data
 
-Below are some example commands for downloading the current version of data catalogued in the Archive Archive of Canadian COVID-19 Data. Datasets are referenced using the UUID from [datasets.json](https://github.com/ccodwg/Covid19CanadaArchive/blob/master/data/datasets.json) in [Covid19CanadaArchive](https://github.com/ccodwg/Covid19CanadaArchive).
+Below are some example commands for downloading the current version of data catalogued in the Archive of Canadian COVID-19 Data. Datasets are referenced using the UUID from [datasets.json](https://github.com/ccodwg/Covid19CanadaArchive/blob/master/data/datasets.json) in [Covid19CanadaArchive](https://github.com/ccodwg/Covid19CanadaArchive).
 
 ``` r
 # download current versions of datasets catalogued in the Archive of Canadian COVID-19 Data
