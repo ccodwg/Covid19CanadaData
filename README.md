@@ -14,7 +14,7 @@ As a basic toolbox for accessing the COVID-19 Canada Open Data Working Group
 dataset, this package is a dependency for several interrelated projects,
 including `Covid19CanadaTrends` and `Covid19CanadaDashboard`.
 
-This package is not currently completely functional. For now, only the following functionality is available:
+Not all features of this package are available yet. Currently, the following functionality is enabled:
 
 * Access to most CCODWG core datasets via the JSON API. Currently, only the time
 series, summary and supplementary (other) datasets are available.
