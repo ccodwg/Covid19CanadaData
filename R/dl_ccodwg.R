@@ -49,6 +49,7 @@
 #'
 #' other: "prov", "hr", "age_cases", "age_mortality"
 #' @examples
+#' \dontrun{
 #' # get case time series for Toronto during the first half of March 2020
 #' dl_ccodwg("timeseries", "cases", loc = 3595, after = "2020-03-01", before = "2020-03-15")
 #'
@@ -60,6 +61,7 @@
 #'
 #' # get date the dataset was last updated
 #' as.Date(dl_ccodwg("version"))
+#' }
 #' @export
 dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
                                "other", "version"),
@@ -182,9 +184,69 @@ dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
 #' This is a simple convenience function to return the date portion of a
 #' "version" call to the API.
 #' @examples
+#' \dontrun{
 #' # get date the CCODWG dataset was last updated
 #' ccodwg_update_date()
+#' }
 #' @export
 ccodwg_update_date <- function(){
   as.Date(dl_ccodwg("version", dateonly = "true"))
+}
+
+#' Download current version of a dataset catalogued in Covid19CanadaArchive
+#'
+#' Download the current version of an active dataset listed in datasets.json of
+#' Covid19CanadaArchive (https://github.com/ccodwg/Covid19CanadaArchive/blob/master/data/datasets.json).
+#' Data can either be imported into R (the default) or written to a file by
+#' specifying the `file` argument. Currently, only CSV datasets are supported.
+#'
+#' @param uuid The UUID of the dataset from datasets.json.
+#' @param file A character string specifying the location to write the specified
+#' dataset as a file (NULL by default, resulting in the dataset being returned
+#' as a data frame).
+#' @return The specified dataset either as a data frame in R (the default) or
+#' written to a file by (by specifying the argument `file`).
+#' @examples
+#' \dontrun{
+#' # get PHAC epidemiology update CSV
+#' dl_current("f7db31d0-6504-4a55-86f7-608664517bdb")
+#'
+#' # get Saskatchewan total cases CSV
+#' dl_current("61cfdd06-7749-4ae6-9975-d8b4f10d5651")
+#' }
+#' @export
+dl_current <- function(uuid,
+                       file = NULL){
+
+  # load datasets.json
+  ds <- jsonlite::fromJSON("https://raw.githubusercontent.com/ccodwg/Covid19CanadaArchive/master/data/datasets.json")
+
+  # try to load daset by uuid
+  if (uuid %in% ds$uuid) {
+    d <- ds[ds$uuid == uuid, ]
+    if (d$active != "True") {
+      stop("Specified UUID exists but is flagged as inactive.")
+    }
+  } else {
+    stop("Specified UUID does not exist in dasets.json.")
+  }
+
+  # if URL is not static, get URL
+  if (!is.na(d$url)) {
+    url <- d$url
+  } else {
+    url <- eval(parse(text = d$url_fun_r))
+  }
+
+  # read dataset and return or write to file
+  if (d$file_ext == "csv") {
+    ## CSV
+    dat <- utils::read.csv(url, stringsAsFactors = FALSE)
+    if (!is.null(file)) {
+      utils::write.csv(dat, file = file, row.names = FALSE)
+    } else {
+      return(dat)
+    }
+  }
+
 }

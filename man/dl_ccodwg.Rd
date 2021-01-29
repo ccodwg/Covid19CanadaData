@@ -87,6 +87,7 @@ Note that not all datasets are available at all geographic levels (loc).
 other: "prov", "hr", "age_cases", "age_mortality"
 }
 \examples{
+\dontrun{
 # get case time series for Toronto during the first half of March 2020
 dl_ccodwg("timeseries", "cases", loc = 3595, after = "2020-03-01", before = "2020-03-15")
 
@@ -98,4 +99,5 @@ dl_ccodwg("other", "prov")
 
 # get date the dataset was last updated
 as.Date(dl_ccodwg("version"))
+}
 }

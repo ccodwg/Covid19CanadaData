@@ -11,6 +11,8 @@ This is a simple convenience function to return the date portion of a
 "version" call to the API.
 }
 \examples{
+\dontrun{
 # get date the CCODWG dataset was last updated
 ccodwg_update_date()
+}
 }

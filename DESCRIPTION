@@ -1,6 +1,6 @@
 Package: Covid19CanadaData
 Title: Download Canadian COVID-19 Data
-Version: 0.2.5
+Version: 0.3.0
 Authors@R:
     person(given = "Jean-Paul R.",
            family = "Soucy",
@@ -11,8 +11,8 @@ Description: This package is used to download Canadian COVID-19 data
     from the following sources:
     * The COVID-19 Canada Open Data Working Group daily dataset
     (https://opencovid.ca/).
-    * The Archive of COVID-19 Data from Canadian Government Sources
-    (https://github.com/jeanpaulrsoucy/covid-19-canada-gov-data).
+    * Archive of Canadian COVID-19 Data
+    (https://github.com/ccodwg/Covid19CanadaArchive).
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
