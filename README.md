@@ -23,11 +23,11 @@ for current versions of CSV datasets via live URLs.
 
 ## Installation
 
-You can install the development version of Covid19CanadaData from [GitHub](https://github.com/jeanpaulrsoucy/Covid19CanadaData) with:
+You can install the development version of Covid19CanadaData from [GitHub](https://github.com/ccodwg/Covid19CanadaData) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("jeanpaulrsoucy/Covid19CanadaData")
+devtools::install_github("ccodwg/Covid19CanadaData")
 ```
 
 ## Examples
