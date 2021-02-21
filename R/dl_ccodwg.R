@@ -228,14 +228,14 @@ dl_current <- function(uuid,
       stop("Specified UUID exists but is flagged as inactive.")
     }
   } else {
-    stop("Specified UUID does not exist in dasets.json.")
+    stop("Specified UUID does not exist in datasets.json.")
   }
 
   # if URL is not static, get URL
   if (!is.na(d$url)) {
     url <- d$url
   } else {
-    url <- eval(parse(text = d$url_fun_r))
+    url <- dl_current_dyn_url(uuid)
   }
 
   # read dataset and return or write to file
