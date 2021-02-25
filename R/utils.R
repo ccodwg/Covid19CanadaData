@@ -68,14 +68,10 @@ dl_current_dyn_url <- function(uuid) {
   switch(
     uuid,
     "61cfdd06-7749-4ae6-9975-d8b4f10d5651" = {
-      library(rvest)
-      library(stringr)
-      paste0('https://dashboard.saskatchewan.ca', str_extract(as.character(html_node(read_html('https://dashboard.saskatchewan.ca/health-wellness/covid-19/cases'), 'body')), '(?<=href=\").*(?=\">CSV)'))
+      paste0('https://dashboard.saskatchewan.ca', stringr::str_extract(as.character(rvest::html_node(xml2::read_html('https://dashboard.saskatchewan.ca/health-wellness/covid-19/cases'), 'body')), '(?<=href=\").*(?=\">CSV)'))
     },
     "c40d5b7c-f41c-4633-8bc1-a158dedcbf40" = {
-      library(rvest)
-      library(stringr)
-      paste0('https://dashboard.saskatchewan.ca', str_extract(as.character(html_node(read_html('https://dashboard.saskatchewan.ca/health-wellness/covid-19-tests/tests'), 'body')), '(?<=href=\").*(?=\">CSV)'))
+      paste0('https://dashboard.saskatchewan.ca', stringr::str_extract(as.character(rvest::html_node(xml2::read_html('https://dashboard.saskatchewan.ca/health-wellness/covid-19-tests/tests'), 'body')), '(?<=href=\").*(?=\">CSV)'))
     },
     stop("Specified UUID does not exist in dasets.json or does not have a dynamic URL.")
   )

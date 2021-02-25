@@ -9,6 +9,7 @@ Authors@R:
            comment = c(ORCID = "0000-0002-8422-2326"))
 Description: This package is used to download Canadian COVID-19 data
     from the following sources:
+    * Live versions of Canadian COVID-19 datasets available on the Internet
     * The COVID-19 Canada Open Data Working Group daily dataset
     (https://opencovid.ca/).
     * Archive of Canadian COVID-19 Data
@@ -16,8 +17,12 @@ Description: This package is used to download Canadian COVID-19 data
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: 
+Imports:
     jsonlite,
-    curl,
-    utils
+    utils,
+    xml2,
+    rvest,
+    stringr,
+    dplyr,
+    magrittr
 RoxygenNote: 7.1.1

@@ -219,7 +219,8 @@ dl_current <- function(uuid,
                        file = NULL){
 
   # load datasets.json
-  ds <- jsonlite::fromJSON("https://raw.githubusercontent.com/ccodwg/Covid19CanadaArchive/master/data/datasets.json")
+  ds <- suppressWarnings(jsonlite::fromJSON("https://raw.githubusercontent.com/ccodwg/Covid19CanadaArchive/master/data/datasets.json")$active %>%
+    dplyr::bind_rows())
 
   # try to load daset by uuid
   if (uuid %in% ds$uuid) {

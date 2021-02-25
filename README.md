@@ -6,6 +6,7 @@
 
 The goal of Covid19CanadaData is to facilitate the acquisition of Canadian COVID-19 data from the following sources:
 
+* Live versions of Canadian COVID-19 datasets available on the Internet
 * The [COVID-19 Canada Open Data Working Group](https://opencovid.ca/) (CCODWG) daily [COVID-19 in Canada dataset](https://github.com/ishaberry/Covid19Canada) via the [JSON API](https://opencovid.ca/api/)
 * The [Archive of Canadian COVID-19 Data](https://github.com/ccodwg/Covid19CanadaArchive), which provides daily snapshots of COVID-19 data from various Canadian government sources (and select non-governmental sources), via live URLs (for current versions) and the Google Drive API (for
 archived versions)
@@ -32,6 +33,20 @@ devtools::install_github("ccodwg/Covid19CanadaData")
 
 ## Examples
 
+### Live Canadian COVID-19 datasets
+
+Below are some example commands for downloading the live versions of data catalogued in the Archive of Canadian COVID-19 Data. Datasets are referenced using the UUID from [datasets.json](https://github.com/ccodwg/Covid19CanadaArchive/blob/master/data/datasets.json) in [Covid19CanadaArchive](https://github.com/ccodwg/Covid19CanadaArchive).
+
+``` r
+# download live versions of datasets catalogued in the Archive of Canadian COVID-19 Data
+
+## get PHAC epidemiology update CSV
+dl_current("f7db31d0-6504-4a55-86f7-608664517bdb")
+
+## get Saskatchewan total cases CSV
+dl_current("61cfdd06-7749-4ae6-9975-d8b4f10d5651")
+```
+
 ### COVID-19 Canada Open Data Working Group dataset
 
 Below are some example commands for downloading data from the COVID-19 Canada Open Data Working Group dataset:
@@ -50,18 +65,4 @@ dl_ccodwg("other", "prov")
 
 ## get date the CCODWG dataset was last updated
 ccodwg_update_date()
-```
-
-### Archive of Canadian COVID-19 Data
-
-Below are some example commands for downloading the current version of data catalogued in the Archive of Canadian COVID-19 Data. Datasets are referenced using the UUID from [datasets.json](https://github.com/ccodwg/Covid19CanadaArchive/blob/master/data/datasets.json) in [Covid19CanadaArchive](https://github.com/ccodwg/Covid19CanadaArchive).
-
-``` r
-# download current versions of datasets catalogued in the Archive of Canadian COVID-19 Data
-
-## get PHAC epidemiology update CSV
-dl_current("f7db31d0-6504-4a55-86f7-608664517bdb")
-
-## get Saskatchewan total cases CSV
-dl_current("61cfdd06-7749-4ae6-9975-d8b4f10d5651")
 ```
