@@ -209,13 +209,13 @@ ccodwg_update_date <- function(){
 #' @examples
 #' \dontrun{
 #' # get PHAC epidemiology update CSV
-#' dl_current("f7db31d0-6504-4a55-86f7-608664517bdb")
+#' dl_dataset("f7db31d0-6504-4a55-86f7-608664517bdb")
 #'
 #' # get Saskatchewan total cases CSV
-#' dl_current("61cfdd06-7749-4ae6-9975-d8b4f10d5651")
+#' dl_dataset("61cfdd06-7749-4ae6-9975-d8b4f10d5651")
 #' }
 #' @export
-dl_current <- function(uuid,
+dl_dataset <- function(uuid,
                        file = NULL){
 
   # load datasets.json
@@ -236,7 +236,7 @@ dl_current <- function(uuid,
   if (!is.na(d$url)) {
     url <- d$url
   } else {
-    url <- dl_current_dyn_url(uuid)
+    url <- dl_dataset_dyn_url(uuid)
   }
 
   # read dataset and return or write to file

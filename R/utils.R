@@ -56,7 +56,7 @@ api_ccodwg <- function(type, args_list) {
 
 #' Download current version of a dataset catalogued in Covid19CanadaArchive: Get dynamic URL
 #'
-#' Helper function for dl_current(): data-specific code to retrieve current URL
+#' Helper function for dl_dataset(): data-specific code to retrieve current URL
 #' of a dataset with dynamic URLs. Replicates code included in the "url_fun_r"
 #' field of datasets.json. This code is intentionally written to fit on a single
 #' line.
@@ -64,7 +64,7 @@ api_ccodwg <- function(type, args_list) {
 #' @param uuid The UUID of the dataset from datasets.json.
 #' @return The current URL of the specified dataset.
 #' @export
-dl_current_dyn_url <- function(uuid) {
+dl_dataset_dyn_url <- function(uuid) {
   switch(
     uuid,
     "61cfdd06-7749-4ae6-9975-d8b4f10d5651" = {

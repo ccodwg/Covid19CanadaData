@@ -41,10 +41,10 @@ Below are some example commands for downloading the live versions of data catalo
 # download live versions of datasets catalogued in the Archive of Canadian COVID-19 Data
 
 ## get PHAC epidemiology update CSV
-dl_current("f7db31d0-6504-4a55-86f7-608664517bdb")
+dl_dataset("f7db31d0-6504-4a55-86f7-608664517bdb")
 
 ## get Saskatchewan total cases CSV
-dl_current("61cfdd06-7749-4ae6-9975-d8b4f10d5651")
+dl_dataset("61cfdd06-7749-4ae6-9975-d8b4f10d5651")
 ```
 
 ### COVID-19 Canada Open Data Working Group dataset

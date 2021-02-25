@@ -3,6 +3,6 @@
 export("%>%")
 export(ccodwg_update_date)
 export(dl_ccodwg)
-export(dl_current)
-export(dl_current_dyn_url)
+export(dl_dataset)
+export(dl_dataset_dyn_url)
 importFrom(magrittr,"%>%")
