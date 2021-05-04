@@ -196,7 +196,7 @@ ccodwg_update_date <- function(){
 #' Download current version of a dataset catalogued in Covid19CanadaArchive
 #'
 #' Download the current version of an active dataset listed in datasets.json of
-#' Covid19CanadaArchive (https://github.com/ccodwg/Covid19CanadaArchive/blob/master/data/datasets.json).
+#' Covid19CanadaArchive (https://github.com/ccodwg/Covid19CanadaArchive/blob/master/datasets.json).
 #' Data can either be imported into R (the default) or written to a file by
 #' specifying the `file` argument. Currently, only CSV datasets are supported.
 #'
@@ -219,7 +219,7 @@ dl_dataset <- function(uuid,
                        file = NULL){
 
   # load datasets.json
-  ds <- suppressWarnings(jsonlite::fromJSON("https://raw.githubusercontent.com/ccodwg/Covid19CanadaArchive/master/data/datasets.json")$active %>%
+  ds <- suppressWarnings(jsonlite::fromJSON("https://raw.githubusercontent.com/ccodwg/Covid19CanadaArchive/master/datasets.json")$active %>%
     dplyr::bind_rows())
 
   # try to load daset by uuid

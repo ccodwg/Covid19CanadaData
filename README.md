@@ -7,9 +7,9 @@
 The goal of Covid19CanadaData is to facilitate the acquisition of Canadian COVID-19 data from the following sources:
 
 * Live versions of Canadian COVID-19 datasets available on the Internet
-* The [COVID-19 Canada Open Data Working Group](https://opencovid.ca/) (CCODWG) daily [COVID-19 in Canada dataset](https://github.com/ishaberry/Covid19Canada) via the [JSON API](https://opencovid.ca/api/)
-* The [Archive of Canadian COVID-19 Data](https://github.com/ccodwg/Covid19CanadaArchive), which provides daily snapshots of COVID-19 data from various Canadian government sources (and select non-governmental sources), via live URLs (for current versions) and the Google Drive API (for
-archived versions)
+* The [COVID-19 Canada Open Data Working Group](https://opencovid.ca/) (CCODWG) daily [COVID-19 in Canada dataset](https://github.com/ccodwg/Covid19Canada) via the [JSON API](https://opencovid.ca/api/)
+* The [Archive of Canadian COVID-19 Data](https://github.com/ccodwg/Covid19CanadaArchive), which provides daily snapshots of COVID-19 data from various Canadian government sources (and select non-governmental sources), via live URLs (for current versions) and Amazon S3 (for
+archived versions). All datasets are catalogued in [datasets.json](https://github.com/ccodwg/Covid19CanadaArchive/blob/master/datasets.json)
 
 As a basic toolbox for accessing the COVID-19 Canada Open Data Working Group
 dataset, this package is a dependency for several interrelated projects,
