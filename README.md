@@ -20,7 +20,7 @@ Not all features of this package are available yet. Currently, the following fun
 * Access to most CCODWG core datasets via the JSON API. Currently, only the time
 series, summary and supplementary (other) datasets are available.
 * Access to the Archive of Canadian COVID-19 Data is currently available only
-for current versions of CSV datasets via live URLs.
+for current versions of CSV, JSON, XLSX, XLS and HTML datasets via live URLs.
 
 ## Installation
 

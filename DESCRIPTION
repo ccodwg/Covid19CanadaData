@@ -22,6 +22,8 @@ Imports:
     utils,
     xml2,
     rvest,
+    readxl,
+    curl,
     stringr,
     dplyr,
     magrittr
