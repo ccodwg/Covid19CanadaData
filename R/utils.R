@@ -18,6 +18,25 @@ get_dataset_list <- function() {
   covid_ds_env$ds_list
 }
 
+#' Error functions for dl_dataset
+#'
+#' Error functions for \code{\link{dl_dataset}}
+#'
+#' @name dl_dataset_e
+NULL
+
+#' process_dataset: Report no functions to process specified UUID
+#' @rdname dl_dataset_e
+e_uuid <- function() stop("No functions exist to process this UUID.")
+
+#' process_dataset: Report value cannot be extracted from specified UUID
+#' @rdname dl_dataset_e
+e_val <- function() stop("The specified value cannot be extracted from this UUID.")
+
+#' process_dataset: Report value cannot be extracted with specified output format
+#' @rdname dl_dataset_e
+e_fmt <- function() stop("The specified output format is not available for this value.")
+
 #' Get province name abbreviations
 #'
 #' @return A character vector of province name abbreviations.

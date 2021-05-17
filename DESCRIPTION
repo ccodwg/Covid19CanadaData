@@ -20,10 +20,13 @@ LazyData: true
 Imports:
     jsonlite,
     utils,
+    methods,
+    rlang,
     xml2,
     rvest,
     readxl,
     curl,
+    readr,
     stringr,
     dplyr,
     magrittr
