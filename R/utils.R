@@ -1,3 +1,23 @@
+#' Get datasets.json
+#'
+#' @return A data frame containing the information from datasets.json.
+get_dataset_list <- function() {
+  if (!exists("ds_list", envir = covid_ds_env)) {
+    # download and cache datasets.json
+    assign(
+      "ds_list",
+      suppressWarnings(
+        jsonlite::fromJSON("https://raw.githubusercontent.com/ccodwg/Covid19CanadaArchive/master/datasets.json") %>%
+          unlist(recursive = FALSE) %>%
+          dplyr::bind_rows()
+      ),
+      envir = covid_ds_env
+    )
+  }
+  # return datasets.json
+  covid_ds_env$ds_list
+}
+
 #' Get province name abbreviations
 #'
 #' @return A character vector of province name abbreviations.

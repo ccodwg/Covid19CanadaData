@@ -27,14 +27,12 @@ dl_dataset <- function(uuid,
                        file = NULL,
                        sheet = NULL){
 
-  # load datasets.json
-  ds <- suppressWarnings(jsonlite::fromJSON("https://raw.githubusercontent.com/ccodwg/Covid19CanadaArchive/master/datasets.json") %>%
-                           unlist(recursive = FALSE) %>%
-                           dplyr::bind_rows())
+  # get datasets.json
+  ds_list <- get_dataset_list()
 
-  # try to load daset by uuid
-  if (uuid %in% ds$uuid) {
-    d <- ds[ds$uuid == uuid, ]
+  # try to load dataset by uuid
+  if (uuid %in% ds_list$uuid) {
+    d <- ds_list[ds_list$uuid == uuid, ]
     if (d$active != "True") {
       stop("Specified UUID exists but is flagged as inactive.")
     }
