@@ -7,6 +7,17 @@
 \usage{
 helper_cum_current(.data, loc = c("prov", "hr"), val, prov, date_current)
 }
+\arguments{
+\item{.data}{The dataset to be processed.}
+
+\item{loc}{One of "prov" or "hr", depending on the spatial resolution.}
+
+\item{val}{The value.}
+
+\item{prov}{The province.}
+
+\item{date_current}{The date provided to cum_current (usually the current date).}
+}
 \description{
 Helper functions for \code{\link{process_dataset}}
 }

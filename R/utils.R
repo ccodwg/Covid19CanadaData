@@ -26,6 +26,11 @@ get_dataset_list <- function() {
 NULL
 
 #' process_dataset: Common processing for fmt = cum_current
+#' @param .data The dataset to be processed.
+#' @param loc One of "prov" or "hr", depending on the spatial resolution.
+#' @param val The value.
+#' @param prov The province.
+#' @param date_current The date provided to cum_current (usually the current date).
 #' @rdname process_dataset_helpers
 helper_cum_current <- function(.data, loc = c("prov", "hr"),
                                val, prov, date_current) {
