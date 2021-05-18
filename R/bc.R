@@ -24,7 +24,7 @@ process_bc <- function(uuid, val, fmt, ds,
                   sub_region_1 = .data$HA_Name,
                   value = .data$Cases
                   ) %>%
-                helper_cum_current(loc = "hr", prov, val, date_current)
+                helper_cum_current(loc = "hr", val, prov, date_current)
             },
             e_fmt()
           )
@@ -39,7 +39,7 @@ process_bc <- function(uuid, val, fmt, ds,
                   sub_region_1 = .data$HA_Name,
                   value = .data$Deaths
                 ) %>%
-              helper_cum_current(loc = "hr", prov, val, date_current)
+              helper_cum_current(loc = "hr", val, prov, date_current)
             },
             e_fmt()
           )
@@ -54,7 +54,7 @@ process_bc <- function(uuid, val, fmt, ds,
                   sub_region_1 = .data$HA_Name,
                   value = .data$Recovered
                 ) %>%
-                helper_cum_current(loc = "hr", prov, val, date_current)
+                helper_cum_current(loc = "hr", val, prov, date_current)
             },
             e_fmt()
           )
@@ -74,7 +74,7 @@ process_bc <- function(uuid, val, fmt, ds,
                 dplyr::slice_tail(n = 1) %>%
                 dplyr::select(.data$Total_Tests) %>%
                 dplyr::rename(value = .data$Total_Tests) %>%
-                helper_cum_current(loc = "prov", prov, val, date_current)
+                helper_cum_current(loc = "prov", val, prov, date_current)
             },
             e_fmt()
           )
@@ -96,7 +96,7 @@ process_bc <- function(uuid, val, fmt, ds,
                 data.frame(
                   value = .
                 ) %>%
-                helper_cum_current(loc = "prov", prov, val, date_current)
+                helper_cum_current(loc = "prov", val, prov, date_current)
             },
             e_fmt()
           )
@@ -112,7 +112,7 @@ process_bc <- function(uuid, val, fmt, ds,
                 data.frame(
                   value = .
                 ) %>%
-                helper_cum_current(loc = "prov", prov, val, date_current)
+                helper_cum_current(loc = "prov", val, prov, date_current)
             },
             e_fmt()
           )
@@ -128,7 +128,7 @@ process_bc <- function(uuid, val, fmt, ds,
                 data.frame(
                   value = .
                 ) %>%
-                helper_cum_current(loc = "prov", prov, val, date_current)
+                helper_cum_current(loc = "prov", val, prov, date_current)
             },
             e_fmt()
           )
