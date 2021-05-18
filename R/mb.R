@@ -8,17 +8,19 @@ process_mb <- function(uuid, val, fmt, ds,
   # set defaults
   prov <- "MB"
 
+  # definitions
+  mb_rha <- c(
+    "Interlake-Eastern",
+    "Northern",
+    "Prairie Mountain Health",
+    "Southern Health-Sant\u00E9 Sud", # unicode
+    "Winnipeg"
+  )
+
   # process datasets
   switch(
     uuid,
     "0261e07b-85ce-4952-99d1-6e1e9a440291" = {
-      mb_rha <- c(
-        "Interlake-Eastern",
-        "Northern",
-        "Prairie Mountain Health",
-        "Southern Health-Sant\u00E9 Sud", # unicode
-        "Winnipeg"
-      )
       switch(
         val,
         "cases" = {
