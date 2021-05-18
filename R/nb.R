@@ -9,5 +9,9 @@ process_nb <- function(uuid, val, fmt, ds,
   prov <- "NB"
 
   # process datasets
+  switch(
+    uuid,
 
+    e_uuid()
+  )
 }

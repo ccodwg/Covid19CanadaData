@@ -9,5 +9,9 @@ process_pe <- function(uuid, val, fmt, ds,
   prov <- "PE"
 
   # process datasets
+  switch(
+    uuid,
 
+    e_uuid()
+  )
 }
