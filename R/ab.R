@@ -90,9 +90,7 @@ process_ab <- function(uuid, val, fmt, ds,
           )
         },
         "testing" = {
-          if (is.null(testing_type)) {
-            stop("Required argument: testing_type (n_tests_completed or n_people_tested).")
-          }
+          match.arg(testing_type, c("n_tests_completed", "n_people_tested"), several.ok = FALSE)
           switch(
             fmt,
             "prov_cum_current" = {
@@ -114,8 +112,6 @@ process_ab <- function(uuid, val, fmt, ds,
                     value = .
                   ) %>%
                   helper_cum_current(loc = "prov", prov, val, date_current)
-              } else {
-                stop("Invalid testing_type.")
               }
             },
             e_fmt()
