@@ -7,7 +7,7 @@ process_ab <- function(uuid, val, fmt, ds,
   # set defaults
   prov <- "AB"
 
-  # process dataset
+  # process datasets
   switch(
     uuid,
     "59da1de8-3b4e-429a-9e18-b67ba3834002" = {
@@ -24,18 +24,7 @@ process_ab <- function(uuid, val, fmt, ds,
                   sub_region_1 = .data$Alberta.Health.Services.Zone,
                   value = .data$n
                 ) %>%
-                dplyr::mutate(
-                  name = val,
-                  province = prov,
-                  date = date_current,
-                  value = as.integer(.data$value)
-                ) %>%
-                dplyr::select(
-                  .data$name,
-                  .data$province,
-                  .data$sub_region_1,
-                  .data$date,
-                  .data$value)
+                helper_cum_current(loc = "hr", prov, val, date_current)
             },
             e_fmt()
           )
@@ -51,18 +40,7 @@ process_ab <- function(uuid, val, fmt, ds,
                   sub_region_1 = .data$Alberta.Health.Services.Zone,
                   value = .data$n
                 ) %>%
-                dplyr::mutate(
-                  name = val,
-                  province = prov,
-                  date = date_current,
-                  value = as.integer(.data$value)
-                ) %>%
-                dplyr::select(
-                  .data$name,
-                  .data$province,
-                  .data$sub_region_1,
-                  .data$date,
-                  .data$value)
+                helper_cum_current(loc = "hr", prov, val, date_current)
             },
             e_fmt()
           )
@@ -78,18 +56,7 @@ process_ab <- function(uuid, val, fmt, ds,
                   sub_region_1 = .data$Alberta.Health.Services.Zone,
                   value = .data$n
                 ) %>%
-                dplyr::mutate(
-                  name = val,
-                  province = prov,
-                  date = date_current,
-                  value = as.integer(.data$value)
-                ) %>%
-                dplyr::select(
-                  .data$name,
-                  .data$province,
-                  .data$sub_region_1,
-                  .data$date,
-                  .data$value)
+                helper_cum_current(loc = "hr", prov, val, date_current)
             },
             e_fmt()
           )
@@ -117,11 +84,7 @@ process_ab <- function(uuid, val, fmt, ds,
                   date = date_current,
                   value = as.integer(.data$value)
                 ) %>%
-                dplyr::select(
-                  .data$name,
-                  .data$province,
-                  .data$date,
-                  .data$value)
+                helper_cum_current(loc = "prov", prov, val, date_current)
             },
             e_fmt()
           )
@@ -141,17 +104,7 @@ process_ab <- function(uuid, val, fmt, ds,
                   data.frame(
                     value = .
                   ) %>%
-                  dplyr::mutate(
-                    name = val,
-                    province = prov,
-                    date = date_current,
-                    value = as.integer(.data$value)
-                  ) %>%
-                  dplyr::select(
-                    .data$name,
-                    .data$province,
-                    .data$date,
-                    .data$value)
+                  helper_cum_current(loc = "prov", prov, val, date_current)
               } else if (testing_type == "n_people_tested") {
                 ds %>%
                   rvest::html_elements("li") %>%
@@ -160,17 +113,7 @@ process_ab <- function(uuid, val, fmt, ds,
                   data.frame(
                     value = .
                   ) %>%
-                  dplyr::mutate(
-                    name = val,
-                    province = prov,
-                    date = date_current,
-                    value = as.integer(.data$value)
-                  ) %>%
-                  dplyr::select(
-                    .data$name,
-                    .data$province,
-                    .data$date,
-                    .data$value)
+                  helper_cum_current(loc = "prov", prov, val, date_current)
               } else {
                 stop("Invalid testing_type.")
               }
@@ -195,17 +138,7 @@ process_ab <- function(uuid, val, fmt, ds,
                 data.frame(
                   value = .
                 ) %>%
-                dplyr::mutate(
-                  name = val,
-                  province = prov,
-                  date = date_current,
-                  value = as.integer(.data$value)
-                ) %>%
-                dplyr::select(
-                  .data$name,
-                  .data$province,
-                  .data$date,
-                  .data$value)
+                helper_cum_current(loc = "prov", prov, val, date_current)
             },
             e_fmt()
           )
@@ -221,17 +154,7 @@ process_ab <- function(uuid, val, fmt, ds,
                 data.frame(
                   value = .
                 ) %>%
-                dplyr::mutate(
-                  name = val,
-                  province = prov,
-                  date = date_current,
-                  value = as.integer(.data$value)
-                ) %>%
-                dplyr::select(
-                  .data$name,
-                  .data$province,
-                  .data$date,
-                  .data$value)
+                helper_cum_current(loc = "prov", prov, val, date_current)
             },
             e_fmt()
           )

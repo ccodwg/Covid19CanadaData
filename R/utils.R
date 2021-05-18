@@ -18,23 +18,65 @@ get_dataset_list <- function() {
   covid_ds_env$ds_list
 }
 
-#' Error functions for dl_dataset
+#' Helper functions for process_dataset
 #'
-#' Error functions for \code{\link{dl_dataset}}
+#' Helper functions for \code{\link{process_dataset}}
 #'
-#' @name dl_dataset_e
+#' @name process_dataset_helpers
+NULL
+
+#' process_dataset: Common processing for fmt = cum_current
+#' @rdname process_dataset_helpers
+helper_cum_current <- function(.data, loc = c("prov", "hr"),
+                               val, prov, date_current) {
+  match.arg(loc, choices = c("prov", "hr"), several.ok = FALSE)
+  if (loc == "prov") {
+    dplyr::mutate(
+      .data,
+      name = val,
+      province = prov,
+      date = date_current,
+      value = as.integer(.data$value)
+    ) %>%
+      dplyr::select(
+        .data$name,
+        .data$province,
+        .data$date,
+        .data$value)
+  } else {
+    dplyr::mutate(
+      .data,
+      name = val,
+      province = prov,
+      date = date_current,
+      value = as.integer(.data$value)
+    ) %>%
+      dplyr::select(
+        .data$name,
+        .data$province,
+        .data$sub_region_1,
+        .data$date,
+        .data$value)
+  }
+}
+
+#' Error functions for process_dataset
+#'
+#' Error functions for \code{\link{process_dataset}}
+#'
+#' @name process_dataset_e
 NULL
 
 #' process_dataset: Report no functions to process specified UUID
-#' @rdname dl_dataset_e
+#' @rdname process_dataset_e
 e_uuid <- function() stop("No functions exist to process this UUID.")
 
 #' process_dataset: Report value cannot be extracted from specified UUID
-#' @rdname dl_dataset_e
+#' @rdname process_dataset_e
 e_val <- function() stop("The specified value cannot be extracted from this UUID.")
 
 #' process_dataset: Report value cannot be extracted with specified output format
-#' @rdname dl_dataset_e
+#' @rdname process_dataset_e
 e_fmt <- function() stop("The specified output format is not available for this value.")
 
 #' Get province name abbreviations
