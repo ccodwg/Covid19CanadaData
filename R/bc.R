@@ -46,6 +46,7 @@ process_bc <- function(uuid, val, fmt, ds,
         },
         "recovered" = {
           switch(
+            fmt,
             "hr_cum_current" = {
               ds$features$attributes %>%
                 dplyr::select(.data$HA_Name, .data$Recovered) %>%
@@ -66,6 +67,7 @@ process_bc <- function(uuid, val, fmt, ds,
         val,
         "testing" = {
           switch(
+            fmt,
             "prov_cum_current" = {
               ds %>%
                 dplyr::filter(.data$Region == "BC") %>%
@@ -90,7 +92,10 @@ process_bc <- function(uuid, val, fmt, ds,
               ds$features$attributes %>%
                 dplyr::filter(.data$HA_Name == "BC") %>%
                 dplyr::select(.data$Tot_Doses_Received) %>%
-                dplyr::rename(value = .data$Tot_Doses_Received) %>%
+                sum %>%
+                data.frame(
+                  value = .
+                ) %>%
                 helper_cum_current(loc = "prov", prov, val, date_current)
             },
             e_fmt()
@@ -103,7 +108,10 @@ process_bc <- function(uuid, val, fmt, ds,
               ds$features$attributes %>%
                 dplyr::filter(.data$HA_Name == "BC") %>%
                 dplyr::select(.data$Tot_Doses_Admin) %>%
-                dplyr::rename(value = .data$Tot_Doses_Admin) %>%
+                sum %>%
+                data.frame(
+                  value = .
+                ) %>%
                 helper_cum_current(loc = "prov", prov, val, date_current)
             },
             e_fmt()
@@ -116,7 +124,10 @@ process_bc <- function(uuid, val, fmt, ds,
               ds$features$attributes %>%
                 dplyr::filter(.data$HA_Name == "BC") %>%
                 dplyr::select(.data$Two_Dose_Admin) %>%
-                dplyr::rename(value = .data$Two_Dose_Admin) %>%
+                sum %>%
+                data.frame(
+                  value = .
+                ) %>%
                 helper_cum_current(loc = "prov", prov, val, date_current)
             },
             e_fmt()
