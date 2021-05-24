@@ -88,6 +88,36 @@ process_on <- function(uuid, val, fmt, ds,
         e_val()
       )
     },
+    "170057c4-3231-4f15-9438-2165c5438dda" = {
+      switch(
+        val,
+        "vaccine_administration" = {
+          switch(
+            fmt,
+            "prov_cum_current" = {
+              ds %>%
+                dplyr::slice_tail(n = 1) %>%
+                dplyr::transmute(value = .data$total_doses_administered) %>%
+                helper_cum_current(loc = "prov", val, prov, date_current)
+            },
+            e_fmt()
+          )
+        },
+        "vaccine_completion" = {
+          switch(
+            fmt,
+            "prov_cum_current" = {
+              ds %>%
+                dplyr::slice_tail(n = 1) %>%
+                dplyr::transmute(value = .data$total_individuals_fully_vaccinated) %>%
+                helper_cum_current(loc = "prov", val, prov, date_current)
+            },
+            e_fmt()
+          )
+        },
+        e_val()
+      )
+    },
     e_uuid()
   )
 }
