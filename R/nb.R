@@ -86,6 +86,49 @@ process_nb <- function(uuid, val, fmt, ds,
         e_val()
       )
     },
+    "18fd4390-8e47-43b4-b1c1-c48218a7859b" = {
+      switch(
+        val,
+        "vaccine_distribution" = {
+          switch(
+            fmt,
+            "prov_cum_current" = {
+              ds$features$attributes %>%
+                dplyr::select(.data$TotalReceived) %>%
+                dplyr::rename(value = .data$TotalReceived) %>%
+                helper_cum_current(loc = "prov", val, prov, date_current)
+            },
+            e_fmt()
+          )
+        },
+        "vaccine_administration" = {
+          switch(
+            fmt,
+            "prov_cum_current" = {
+              ds$features$attributes %>%
+                dplyr::select(.data$TotalAdmin) %>%
+                dplyr::rename(value = .data$TotalAdmin) %>%
+                helper_cum_current(loc = "prov", val, prov, date_current)
+            },
+            e_fmt()
+          )
+        },
+        "vaccine_completion" = {
+          switch(
+            fmt,
+            "prov_cum_current" = {
+              ds$features$attributes %>%
+                dplyr::select(.data$TotalAdmin, .data$PopOneDose) %>%
+                dplyr::mutate(value = .data$TotalAdmin - .data$PopOneDose) %>%
+                dplyr::select(.data$value) %>%
+                helper_cum_current(loc = "prov", val, prov, date_current)
+            },
+            e_fmt()
+          )
+        },
+        e_val()
+      )
+    },
     e_uuid()
   )
 }
