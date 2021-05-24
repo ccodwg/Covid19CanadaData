@@ -143,6 +143,54 @@ process_qc <- function(uuid, val, fmt, ds,
         e_val()
       )
     },
+    "aee3bd38-b782-4880-9033-db76f84cef5b" = {
+      switch(
+        val,
+        "vaccine_distribution" = {
+          switch(
+            fmt,
+            "prov_cum_current" = {
+              ds %>%
+                dplyr::slice_head(n = 1) %>%
+                dplyr::select(value = 2) %>% # ref by position to avoid unicode name
+                helper_cum_current(loc = "prov", val, prov, date_current)
+            },
+            e_fmt()
+          )
+        },
+        e_val()
+      )
+    },
+    "4e04442d-f372-4357-ba15-3b64f4e03fbe" = {
+      switch(
+        val,
+        "vaccine_administration" = {
+          switch(
+            fmt,
+            "prov_cum_current" = {
+              ds %>%
+                dplyr::slice_tail(n = 1) %>%
+                dplyr::transmute(value = .data$RSS99_DOSES_Total_cumu) %>%
+                helper_cum_current(loc = "prov", val, prov, date_current)
+            },
+            e_fmt()
+          )
+        },
+        "vaccine_completion" = {
+          switch(
+            fmt,
+            "prov_cum_current" = {
+              ds %>%
+                dplyr::slice_tail(n = 1) %>%
+                dplyr::transmute(value = .data$RSS99_DOSE_Numero2_cumu) %>%
+                helper_cum_current(loc = "prov", val, prov, date_current)
+            },
+            e_fmt()
+          )
+        },
+        e_val()
+      )
+    },
     e_uuid()
   )
 }
