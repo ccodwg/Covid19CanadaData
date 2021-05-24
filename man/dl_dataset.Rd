@@ -4,7 +4,7 @@
 \alias{dl_dataset}
 \title{Download current version of a dataset catalogued in Covid19CanadaArchive}
 \usage{
-dl_dataset(uuid, file = NULL, sheet = NULL)
+dl_dataset(uuid, file = NULL, sep = NULL, sheet = NULL)
 }
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}
@@ -12,6 +12,8 @@ dl_dataset(uuid, file = NULL, sheet = NULL)
 \item{file}{A character string specifying the location to write the specified
 dataset as a file (NULL by default, resulting in the dataset being returned
 as a data frame).}
+
+\item{sep}{The separator to use when reading CSV files. Defaults to ",".}
 
 \item{sheet}{An integer specifying the sheet to return for an XLSX or XLS
 file (by default, reads sheet 1 with a warning).}

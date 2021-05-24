@@ -10,6 +10,7 @@
 #' @param file A character string specifying the location to write the specified
 #' dataset as a file (NULL by default, resulting in the dataset being returned
 #' as a data frame).
+#' @param sep The separator to use when reading CSV files. Defaults to ",".
 #' @param sheet An integer specifying the sheet to return for an XLSX or XLS
 #' file (by default, reads sheet 1 with a warning).
 #' @return The specified dataset either as a data frame in R (the default) or
@@ -25,6 +26,7 @@
 #' @export
 dl_dataset <- function(uuid,
                        file = NULL,
+                       sep = NULL,
                        sheet = NULL){
 
   # get datasets.json
@@ -52,7 +54,10 @@ dl_dataset <- function(uuid,
     curl::curl_download(url, file)
   } else {
     if (d$file_ext == "csv") {
-      dat <- utils::read.csv(url, stringsAsFactors = FALSE)
+      if (is.null(sep)) {
+        sep <- ","
+      }
+      dat <- utils::read.csv(url, stringsAsFactors = FALSE, sep = sep)
     } else if (d$file_ext == "json") {
       dat <- jsonlite::fromJSON(url)
     } else if (d$file_ext %in% c("xlsx", "xls")) {
