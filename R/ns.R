@@ -91,6 +91,50 @@ process_ns <- function(uuid, val, fmt, ds,
         e_val()
       )
     },
+    "70214276-8616-488c-b53a-b514608e3146" = {
+      switch(
+        val,
+        "vaccine_distribution" = {
+          switch(
+            fmt,
+            "prov_cum_current" = {
+              ds$features$attributes %>%
+                dplyr::transmute(value = .data$dose_rec) %>%
+                helper_cum_current(loc = "prov", val, prov, date_current)
+            },
+            e_fmt()
+          )
+        },
+        "vaccine_administration" = {
+          switch(
+            fmt,
+            "prov_cum_current" = {
+              ds$features$attributes %>%
+                dplyr::transmute(value = .data$dose_adm) %>%
+                helper_cum_current(loc = "prov", val, prov, date_current)
+            },
+            e_fmt()
+          )
+        },
+        "vaccine_completion" = {
+          switch(
+            fmt,
+            "prov_cum_current" = {
+              # April 21, 2021: https://novascotia.ca/news/release/?id=20210421003
+              # 230,801 doses admin / 33,356 fully vaccinated
+              # dashboard: 15.5% only one dose, 3.4% two doses
+              # 33,356 * (100 / 3.4) = 981058.8
+              # this confirms NS is using 2019 pop for coverage calcs: 971,395
+              ds$features$attributes %>%
+                dplyr::transmute(value = round(.data$prct_pop_2 / 100 * 971395)) %>%
+                helper_cum_current(loc = "prov", val, prov, date_current)
+            },
+            e_fmt()
+          )
+        },
+        e_val()
+      )
+    },
     e_uuid()
   )
 }
