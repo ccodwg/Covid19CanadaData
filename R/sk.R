@@ -139,6 +139,68 @@ process_sk <- function(uuid, val, fmt, ds,
         e_val()
       )
     },
+    "15556169-0471-49ea-926e-20b5e8dbd25d" = {
+      switch(
+        val,
+        "vaccine_administration" = {
+          switch(
+            fmt,
+            "hr_cum_current" = {
+              dat <- ds$tabs$tables[[1]]$body[[2]]$cells[1:13] %>%
+                lapply(FUN = function(x) {
+                  x %>%
+                    dplyr::select(1) %>%
+                    dplyr::slice(c(1, 4))
+                })
+              dat <- data.frame(matrix(unlist(dat), ncol = 2, byrow = TRUE)) %>%
+                dplyr::rename(
+                  sub_region_1 = .data$X1,
+                  value = .data$X2
+                ) %>%
+                dplyr::mutate(value = as.integer(.data$value))
+              # append missing HR data (diff between SK total and sum of HRs)
+              dat <- dat %>%
+                dplyr::add_row(
+                  sub_region_1 = "Not Reported",
+                  value = as.integer(ds$tabs$tables[[1]]$body[[2]]$cells[[14]][[1]][4]) -
+                    sum(dat$value)
+                )
+              dat
+            },
+            e_fmt()
+          )
+        },
+        "vaccine_completion" = {
+          switch(
+            fmt,
+            "hr_cum_current" = {
+              dat <- ds$tabs$tables[[1]]$body[[2]]$cells[1:13] %>%
+                lapply(FUN = function(x) {
+                  x %>%
+                    dplyr::select(1) %>%
+                    dplyr::slice(c(1, 3))
+                })
+              dat <- data.frame(matrix(unlist(dat), ncol = 2, byrow = TRUE)) %>%
+                dplyr::rename(
+                  sub_region_1 = .data$X1,
+                  value = .data$X2
+                ) %>%
+                dplyr::mutate(value = as.integer(.data$value))
+              # append missing HR data (diff between SK total and sum of HRs)
+              dat <- dat %>%
+                dplyr::add_row(
+                  sub_region_1 = "Not Reported",
+                  value = as.integer(ds$tabs$tables[[1]]$body[[2]]$cells[[14]][[1]][3]) -
+                    sum(dat$value)
+                )
+              dat
+            },
+            e_fmt()
+          )
+        },
+        e_val()
+      )
+    },
     e_uuid()
   )
 }
