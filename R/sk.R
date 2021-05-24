@@ -30,7 +30,7 @@ process_sk <- function(uuid, val, fmt, ds,
                   sub_region_1 = .data$X1,
                   value = .data$X2
                   ) %>%
-              dplyr::mutate(value = as.integer(value))
+              dplyr::mutate(value = as.integer(.data$value))
             # append missing HR data (diff between SK total and sum of HRs)
             dat <- dat %>%
               dplyr::add_row(
@@ -59,7 +59,7 @@ process_sk <- function(uuid, val, fmt, ds,
                   sub_region_1 = .data$X1,
                   value = .data$X2
                 ) %>%
-                dplyr::mutate(value = as.integer(value))
+                dplyr::mutate(value = as.integer(.data$value))
               # append missing HR data (diff between SK total and sum of HRs)
               dat <- dat %>%
                 dplyr::add_row(
@@ -88,7 +88,7 @@ process_sk <- function(uuid, val, fmt, ds,
                   sub_region_1 = .data$X1,
                   value = .data$X2
                 ) %>%
-                dplyr::mutate(value = as.integer(value))
+                dplyr::mutate(value = as.integer(.data$value))
               # append missing HR data (diff between SK total and sum of HRs)
               dat <- dat %>%
                 dplyr::add_row(
@@ -123,7 +123,7 @@ process_sk <- function(uuid, val, fmt, ds,
                     sub_region_1 = .data$X1,
                     value = .data$X2
                   ) %>%
-                  dplyr::mutate(value = as.integer(value))
+                  dplyr::mutate(value = as.integer(.data$value))
                 # append missing HR data (diff between SK total and sum of HRs)
                 dat <- dat %>%
                   dplyr::add_row(
