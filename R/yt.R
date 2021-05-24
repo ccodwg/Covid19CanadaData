@@ -3,7 +3,7 @@
 #' @keywords internal
 #' @importFrom rlang .data
 process_yt <- function(uuid, val, fmt, ds,
-                       date_current, testing_type) {
+                       prov, date_current, testing_type) {
 
   # set defaults
   prov <- "YT"

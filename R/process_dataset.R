@@ -70,6 +70,11 @@ process_dataset <- function(uuid,
 
   # unpack optional arguments
   dots <- list(...)
+  if (methods::hasArg("prov")) {
+    prov <- dots[["prov"]]
+  } else {
+    prov <- NULL
+  }
   if (methods::hasArg("date_current")) {
     date_current <- dots[["date_current"]]
   } else {
@@ -83,7 +88,7 @@ process_dataset <- function(uuid,
 
   # pass arguments to processing function
   dat_processed <- process_fun(uuid, val, fmt, ds,
-                               date_current, testing_type)
+                               prov, date_current, testing_type)
 
   # return processed data
   dat_processed
