@@ -98,6 +98,57 @@ process_mb <- function(uuid, val, fmt, ds,
         e_val()
       )
     },
+    "1e9f40b2-853f-49d5-a9c4-ed04fee1bea2" = {
+      switch(
+        val,
+        "vaccine_distribution" = {
+          switch(
+            fmt,
+            "prov_cum_current" = {
+              ds$features$attributes %>%
+                dplyr::filter(.data$Manufacturer == "All") %>%
+                dplyr::select(.data$Doses_Received) %>%
+                dplyr::rename(value = .data$Doses_Received) %>%
+                helper_cum_current(loc = "prov", val, prov, date_current)
+            },
+            e_fmt()
+          )
+        },
+        e_val()
+      )
+    },
+    "159fb279-228a-4a6f-afdd-c543f201d88d" = {
+      switch(
+        val,
+        "vaccine_administration" = {
+          switch(
+            fmt,
+            "prov_cum_current" = {
+              ds$features$attributes %>%
+                dplyr::slice_tail(n = 1) %>%
+                dplyr::select(.data$Cumulative_Total_Doses) %>%
+                dplyr::rename(value = .data$Cumulative_Total_Doses) %>%
+                helper_cum_current(loc = "prov", val, prov, date_current)
+            },
+            e_fmt()
+          )
+        },
+        "vaccine_completion" = {
+          switch(
+            fmt,
+            "prov_cum_current" = {
+              ds$features$attributes %>%
+                dplyr::slice_tail(n = 1) %>%
+                dplyr::select(.data$Cumulative_Second_Doses) %>%
+                dplyr::rename(value = .data$Cumulative_Second_Doses) %>%
+                helper_cum_current(loc = "prov", val, prov, date_current)
+            },
+            e_fmt()
+          )
+        },
+        e_val()
+      )
+    },
     e_uuid()
   )
 }
