@@ -168,6 +168,9 @@ dl_dataset_dyn_url <- function(uuid) {
     "5783f3d9-93b0-4aaa-ab97-e0e362a084cc" = {
       paste0('https://dashboard.saskatchewan.ca', stringr::str_extract(as.character(rvest::html_node(xml2::read_html('https://dashboard.saskatchewan.ca/health-wellness/covid-19-vaccines/vaccines'), 'body')), '(?<=href=\").*(?=\">CSV)'))
     },
+    "bd18a4e4-bc22-47c6-b601-1aae39667a03" = {
+      paste0('https://www.gov.nu.ca', rvest::html_attr(rvest::html_elements(rvest::html_node(rvest::read_html('https://www.gov.nu.ca/health/information/covid-19-vaccination'), 'body'), 'img')[[2]], 'src'))
+    },
     stop("Specified UUID does not exist in dasets.json or does not have a dynamic URL.")
   )
 }
