@@ -4,7 +4,7 @@
 \alias{process_qc}
 \title{Functions to process datasets: QC}
 \usage{
-process_qc(uuid, val, fmt, ds, date_current, testing_type)
+process_qc(uuid, val, fmt, ds, prov, date_current, testing_type)
 }
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}

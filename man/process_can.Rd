@@ -4,7 +4,7 @@
 \alias{process_can}
 \title{Functions to process datasets: CAN}
 \usage{
-process_can(uuid, val, fmt, ds, date_current, testing_type)
+process_can(uuid, val, fmt, ds, prov, date_current, testing_type)
 }
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}

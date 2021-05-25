@@ -4,7 +4,7 @@
 \alias{process_sk}
 \title{Functions to process datasets: SK}
 \usage{
-process_sk(uuid, val, fmt, ds, date_current, testing_type)
+process_sk(uuid, val, fmt, ds, prov, date_current, testing_type)
 }
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}

@@ -4,7 +4,7 @@
 \alias{process_mb}
 \title{Functions to process datasets: MB}
 \usage{
-process_mb(uuid, val, fmt, ds, date_current, testing_type)
+process_mb(uuid, val, fmt, ds, prov, date_current, testing_type)
 }
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}

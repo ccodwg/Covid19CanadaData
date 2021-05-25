@@ -4,7 +4,7 @@
 \alias{process_bc}
 \title{Functions to process datasets: BC}
 \usage{
-process_bc(uuid, val, fmt, ds, date_current, testing_type)
+process_bc(uuid, val, fmt, ds, prov, date_current, testing_type)
 }
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}

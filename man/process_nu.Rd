@@ -4,7 +4,7 @@
 \alias{process_nu}
 \title{Functions to process datasets: NU}
 \usage{
-process_nu(uuid, val, fmt, ds, date_current, testing_type)
+process_nu(uuid, val, fmt, ds, prov, date_current, testing_type)
 }
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}

@@ -4,7 +4,7 @@
 \alias{process_ns}
 \title{Functions to process datasets: NS}
 \usage{
-process_ns(uuid, val, fmt, ds, date_current, testing_type)
+process_ns(uuid, val, fmt, ds, prov, date_current, testing_type)
 }
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}

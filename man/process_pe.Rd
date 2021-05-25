@@ -4,7 +4,7 @@
 \alias{process_pe}
 \title{Functions to process datasets: PE}
 \usage{
-process_pe(uuid, val, fmt, ds, date_current, testing_type)
+process_pe(uuid, val, fmt, ds, prov, date_current, testing_type)
 }
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}

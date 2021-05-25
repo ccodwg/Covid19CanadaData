@@ -4,7 +4,7 @@
 \alias{process_ab}
 \title{Functions to process datasets: AB}
 \usage{
-process_ab(uuid, val, fmt, ds, date_current, testing_type)
+process_ab(uuid, val, fmt, ds, prov, date_current, testing_type)
 }
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}

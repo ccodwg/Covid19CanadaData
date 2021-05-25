@@ -4,7 +4,7 @@
 \alias{process_yt}
 \title{Functions to process datasets: YT}
 \usage{
-process_yt(uuid, val, fmt, ds, date_current, testing_type)
+process_yt(uuid, val, fmt, ds, prov, date_current, testing_type)
 }
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}
