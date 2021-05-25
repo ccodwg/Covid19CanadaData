@@ -86,24 +86,64 @@ process_nu <- function(uuid, val, fmt, ds,
             e_fmt()
           )
         },
-        "vaccine_distribution" = {
-          switch(
-            fmt,
-
-            e_fmt()
-          )
-        },
+        e_val()
+      )
+    },
+    "bd18a4e4-bc22-47c6-b601-1aae39667a03" = {
+      switch(
+        val,
         "vaccine_administration" = {
           switch(
             fmt,
-
+            "prov_cum_current" = {
+              ds %>%
+                # chop off population table
+                magick::image_flop() %>%
+                magick::image_crop(geometry = "50%x100%+0+0") %>%
+                magick::image_flop() %>%
+                # crop to Nunavut summary
+                magick::image_crop(geometry = "100%x3%+0+122") %>%
+                magick::image_transparent("white", fuzz = 50) %>%
+                magick::image_background("white") %>%
+                # read data
+                tesseract::ocr() %>%
+                gsub("\n", "", .) %>%
+                stringr::str_split(" ", simplify = TRUE) %>%
+                `[`(c(1, 3)) %>%
+                readr::parse_number() %>%
+                sum() %>%
+                data.frame(
+                  value = .
+                ) %>%
+                helper_cum_current(loc = "prov", val, prov, date_current)
+            },
             e_fmt()
           )
         },
         "vaccine_completion" = {
           switch(
             fmt,
-
+            "prov_cum_current" = {
+              ds %>%
+                # chop off population table
+                magick::image_flop() %>%
+                magick::image_crop(geometry = "50%x100%+0+0") %>%
+                magick::image_flop() %>%
+                # crop to Nunavut summary
+                magick::image_crop(geometry = "100%x3%+0+122") %>%
+                magick::image_transparent("white", fuzz = 50) %>%
+                magick::image_background("white") %>%
+                # read data
+                tesseract::ocr() %>%
+                gsub("\n", "", .) %>%
+                stringr::str_split(" ", simplify = TRUE) %>%
+                `[`(3) %>%
+                readr::parse_number() %>%
+                data.frame(
+                  value = .
+                ) %>%
+                helper_cum_current(loc = "prov", val, prov, date_current)
+            },
             e_fmt()
           )
         },
