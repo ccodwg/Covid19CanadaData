@@ -25,6 +25,8 @@ Imports:
     xml2,
     rvest,
     readxl,
+    magick,
+    tesseract,
     curl,
     readr,
     stringr,

@@ -26,8 +26,8 @@ written to a file by (by specifying the argument `file`).
 Download the current version of an active dataset listed in datasets.json of
 Covid19CanadaArchive (https://github.com/ccodwg/Covid19CanadaArchive/blob/master/datasets.json).
 Data can either be imported into R (the default) or written to a file by
-specifying the `file` argument. Currently, only CSV, JSON, XLSX, XLS and HTML
-datasets are supported for reading into R.
+specifying the `file` argument. Currently, only CSV, JSON, XLSX, XLS, image
+and HTML datasets are supported for reading into R.
 }
 \examples{
 \dontrun{

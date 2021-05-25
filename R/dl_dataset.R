@@ -3,8 +3,8 @@
 #' Download the current version of an active dataset listed in datasets.json of
 #' Covid19CanadaArchive (https://github.com/ccodwg/Covid19CanadaArchive/blob/master/datasets.json).
 #' Data can either be imported into R (the default) or written to a file by
-#' specifying the `file` argument. Currently, only CSV, JSON, XLSX, XLS and HTML
-#' datasets are supported for reading into R.
+#' specifying the `file` argument. Currently, only CSV, JSON, XLSX, XLS, image
+#' and HTML datasets are supported for reading into R.
 #'
 #' @param uuid The UUID of the dataset from datasets.json.
 #' @param file A character string specifying the location to write the specified
@@ -72,6 +72,8 @@ dl_dataset <- function(uuid,
       }
       utils::download.file(url, tmp)
       dat <- readxl::read_excel(tmp, sheet)
+    } else if (d$file_ext %in% c("jpg", "jpeg", "png", "tiff")) {
+      dat <- magick::image_read(url)
     } else if (d$file_ext == "html") {
       dat <- xml2::read_html(url)
     } else {
