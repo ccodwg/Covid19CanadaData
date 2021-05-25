@@ -1,6 +1,6 @@
 Package: Covid19CanadaData
 Title: Download Canadian COVID-19 Data
-Version: 0.4.0
+Version: 0.5.0
 Authors@R:
     person(given = "Jean-Paul R.",
            family = "Soucy",
@@ -18,18 +18,13 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
-    jsonlite,
-    utils,
-    methods,
-    rlang,
-    xml2,
-    rvest,
-    readxl,
-    magick,
-    tesseract,
     curl,
-    readr,
-    stringr,
     dplyr,
-    magrittr
+    jsonlite,
+    magick,
+    magrittr,
+    readxl,
+    rvest,
+    stringr,
+    xml2
 RoxygenNote: 7.1.1
