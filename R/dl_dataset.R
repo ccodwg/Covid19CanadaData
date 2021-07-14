@@ -49,9 +49,18 @@ dl_dataset <- function(uuid,
     url <- dl_dataset_dyn_url(uuid)
   }
 
+  # add no-cache header
+  h <- curl::new_handle()
+  curl::handle_setheaders(h, "Cache-Control" = "no-cache") # not always respected
+
+  # add random number to url to prevent caching, if requested
+  if (!is.na(d$args$rand_url) & d$args$rand_url == "True") {
+    url <- paste0(url, "?randNum=", as.integer(Sys.time()))
+  }
+
   # download file or read into R
   if (!is.null(file)) {
-    curl::curl_download(url, file)
+    curl::curl_download(url, file, handle = h)
   } else {
     if (d$file_ext == "csv") {
       if (is.null(sep)) {
