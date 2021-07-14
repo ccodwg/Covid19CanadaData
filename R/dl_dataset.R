@@ -49,9 +49,11 @@ dl_dataset <- function(uuid,
     url <- dl_dataset_dyn_url(uuid)
   }
 
-  # add no-cache header
+  # add no-cache header (not always respected)
   h <- curl::new_handle()
-  curl::handle_setheaders(h, "Cache-Control" = "no-cache") # not always respected
+  curl::handle_setheaders(h,
+                          "Cache-Control" = "no-cache",
+                          "Pragma" = "no-cache")
 
   # add random number to url to prevent caching, if requested
   if (!is.na(d$args$rand_url) & d$args$rand_url == "True") {
