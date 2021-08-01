@@ -76,11 +76,7 @@ dl_dataset <- function(uuid,
         warning("Sheet not specified, reading sheet 1 by default.")
         sheet <- 1
       }
-      if (d$file_ext == "xlsx") {
-        tmp <- tempfile(fileext = ".xlsx")
-      } else {
-        tmp <- tempfile(fileext = ".xls")
-      }
+      tmp <- tempfile(fileext = paste0(".", d$file_ext))
       utils::download.file(url, tmp)
       dat <- readxl::read_excel(tmp, sheet)
     } else if (d$file_ext %in% c("jpg", "jpeg", "png", "tiff")) {
