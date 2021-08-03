@@ -1,22 +1,23 @@
+#' Persistent storage for datasets.json
+ds_env <- new.env()
+
 #' Get datasets.json
 #'
 #' @return A data frame containing the information from datasets.json.
 #' @export
 get_dataset_list <- function() {
-  if (!exists("ds_list", envir = covid_ds_env)) {
+  if (!exists("ds_list", envir = ds_env)) {
     # download and cache datasets.json
-    assign(
-      "ds_list",
-      suppressWarnings(
-        jsonlite::fromJSON("https://raw.githubusercontent.com/ccodwg/Covid19CanadaArchive/master/datasets.json") %>%
-          unlist(recursive = FALSE) %>%
-          dplyr::bind_rows()
-      ),
-      envir = covid_ds_env
-    )
+    assign("ds_list", envir = ds_env,
+           ds_list <- suppressWarnings(
+             jsonlite::fromJSON("https://raw.githubusercontent.com/ccodwg/Covid19CanadaArchive/master/datasets.json") %>%
+               unlist(recursive = FALSE) %>%
+               dplyr::bind_rows()
+           ))
+
   }
   # return datasets.json
-  covid_ds_env$ds_list
+  return(get("ds_list", envir = ds_env))
 }
 
 #' Download current version of a dataset catalogued in Covid19CanadaArchive: Get dynamic URL
