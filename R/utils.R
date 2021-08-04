@@ -20,6 +20,16 @@ get_dataset_list <- function() {
   return(get("ds_list", envir = ds_env))
 }
 
+#' Get URL of dataset by UUID
+#'
+#' @param uuid The UUID of the dataset from datasets.json.
+#' @return The URL of the specified dataset.
+#' @export
+get_dataset_url <- function(uuid) {
+  ds_list <- get_dataset_list()
+  ds_list[ds_list$uuid == uuid, "url"]
+}
+
 #' Download current version of a dataset catalogued in Covid19CanadaArchive: Get dynamic URL
 #'
 #' Helper function for dl_dataset(): data-specific code to retrieve current URL
