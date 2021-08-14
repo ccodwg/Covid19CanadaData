@@ -49,11 +49,18 @@ dl_dataset <- function(uuid,
     url <- dl_dataset_dyn_url(uuid)
   }
 
-  # add no-cache header (not always respected)
+  # create curl handle
   h <- curl::new_handle()
+
+  # add no-cache headers (not always respected)
   curl::handle_setheaders(h,
                           "Cache-Control" = "no-cache",
                           "Pragma" = "no-cache")
+
+  # don't verify SSL certificate, if requested
+  if (d$args$verify == "False") {
+    curl::handle_setopt(h, "ssl_verifypeer" = FALSE)
+  }
 
   # add random number to url to prevent caching, if requested
   if (!is.na(d$args$rand_url) & d$args$rand_url == "True") {
@@ -82,7 +89,15 @@ dl_dataset <- function(uuid,
     } else if (d$file_ext %in% c("jpg", "jpeg", "png", "tiff")) {
       dat <- magick::image_read(url)
     } else if (d$file_ext == "html") {
-      dat <- xml2::read_html(url)
+      if (d$args$verify == "False") {
+        # don't verify SSL certificate
+        dat <- xml2::read_html(
+          httr::content(
+            httr::GET(
+              url, config = httr::config(ssl_verifypeer = FALSE)), as = "text"))
+      } else {
+        dat <- xml2::read_html(url)
+      }
     } else {
       stop("The file extension of this dataset is not supported for reading into R.")
     }

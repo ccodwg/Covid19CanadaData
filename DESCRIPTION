@@ -25,6 +25,7 @@ Imports:
     magick,
     magrittr,
     readxl,
+    httr,
     rvest,
     stringr,
     xml2,
