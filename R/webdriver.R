@@ -34,6 +34,6 @@ webdriver_close <- function(webdriver) {
   webdriver$client$close()
   out <- utils::capture.output(webdriver$server$stop())
   if (!grepl("TRUE", out)) {
-    stop("Something went wrong when closing the Selenium server.")
+    warning("Something went wrong when closing the Selenium server.")
   }
 }
