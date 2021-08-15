@@ -58,7 +58,7 @@ dl_dataset <- function(uuid,
                           "Pragma" = "no-cache")
 
   # don't verify SSL certificate, if requested
-  if (d$args$verify == "False") {
+  if (!is.na(d$args$verify) & d$args$verify == "False") {
     curl::handle_setopt(h, "ssl_verifypeer" = FALSE)
   }
 
@@ -89,7 +89,7 @@ dl_dataset <- function(uuid,
     } else if (d$file_ext %in% c("jpg", "jpeg", "png", "tiff")) {
       dat <- magick::image_read(url)
     } else if (d$file_ext == "html") {
-      if (d$args$verify == "False") {
+      if (!is.na(d$args$verify) & d$args$verify == "False") {
         # don't verify SSL certificate
         dat <- xml2::read_html(
           httr::content(
