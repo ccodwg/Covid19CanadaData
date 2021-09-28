@@ -5,20 +5,27 @@
 NULL
 
 #' @param url The URL to navigate to.
+#' @param headless Run in headless mode? Default: TRUE. Non-headless mode can
+#' be useful for debugging.
 #' @param check See parameter in \code{\link[RSelenium]{rsDriver}}.
 #' @param verbose See parameter in \code{\link[RSelenium]{rsDriver}}.
 #' @rdname webdriver
 #' @export
-webdriver_open <- function(url, check = FALSE, verbose = FALSE) {
+webdriver_open <- function(url, headless = TRUE, check = FALSE, verbose = FALSE) {
 
-  # start headless Firefox
+  # start Firefox
+  if (headless) {
+    ec <- list(
+      "moz:firefoxOptions" = list(
+        args = list('--headless')))
+  } else {
+    ec <- list()
+  }
   webdriver <- RSelenium::rsDriver(
     browser = "firefox",
     check = check,
     verbose = verbose,
-    extraCapabilities = list(
-      "moz:firefoxOptions" = list(
-        args = list('--headless'))))
+    extraCapabilities = ec)
 
   # navigate to relevant content
   webdriver$client$navigate(url)

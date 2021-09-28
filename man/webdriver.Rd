@@ -6,12 +6,15 @@
 \alias{webdriver_close}
 \title{Functions for RSelenium}
 \usage{
-webdriver_open(url, check = FALSE, verbose = FALSE)
+webdriver_open(url, headless = TRUE, check = FALSE, verbose = FALSE)
 
 webdriver_close(webdriver)
 }
 \arguments{
 \item{url}{The URL to navigate to.}
+
+\item{headless}{Run in headless mode? Default: TRUE. Non-headless mode can
+be useful for debugging.}
 
 \item{check}{See parameter in \code{\link[RSelenium]{rsDriver}}.}
 
