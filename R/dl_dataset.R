@@ -89,14 +89,18 @@ dl_dataset <- function(uuid,
     } else if (d$file_ext %in% c("jpg", "jpeg", "png", "tiff")) {
       dat <- magick::image_read(url)
     } else if (d$file_ext == "html") {
-      if (!is.na(d$args$verify) & d$args$verify == "False") {
-        # don't verify SSL certificate
-        dat <- xml2::read_html(
-          httr::content(
-            httr::GET(
-              url, config = httr::config(ssl_verifypeer = FALSE)), as = "text"))
+      if (!is.na(d$args$js) & d$args$js == "True") {
+        dat <- webdriver_get(uuid)
       } else {
-        dat <- xml2::read_html(url)
+        if (!is.na(d$args$verify) & d$args$verify == "False") {
+          # don't verify SSL certificate
+          dat <- xml2::read_html(
+            httr::content(
+              httr::GET(
+                url, config = httr::config(ssl_verifypeer = FALSE)), as = "text"))
+        } else {
+          dat <- xml2::read_html(url)
+        }
       }
     } else {
       stop("The file extension of this dataset is not supported for reading into R.")

@@ -30,6 +30,30 @@ get_dataset_url <- function(uuid) {
   ds_list[ds_list$uuid == uuid, "url"]
 }
 
+#' Get argument of dataset by UUID
+#'
+#' @param uuid The UUID of the dataset from datasets.json.
+#' @param arg The argument to return.
+#' @return The named arg of the specified dataset.
+#' @export
+get_dataset_arg <- function(uuid, arg) {
+  ds_list <- get_dataset_list()
+  ds <- ds_list[ds_list$uuid == uuid, "args"]
+  tryCatch(
+    {
+      d <- ds[[arg]]
+      if (is.na(d)) {
+        cat("Argument", arg, "not specified for this UUID. Returning NA.", fill = TRUE)
+      }
+      return(d)
+    },
+    error = function(e) {
+      cat("Argument", arg, "is invalid. Returning NA.", fill = TRUE)
+      return(NA)
+    }
+  )
+}
+
 #' Download current version of a dataset catalogued in Covid19CanadaArchive: Get dynamic URL
 #'
 #' Helper function for dl_dataset(): data-specific code to retrieve current URL

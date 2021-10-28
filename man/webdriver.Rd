@@ -4,11 +4,20 @@
 \alias{webdriver}
 \alias{webdriver_open}
 \alias{webdriver_close}
+\alias{webdriver_wait_for_element}
+\alias{webdriver_commands}
+\alias{webdriver_get}
 \title{Functions for RSelenium}
 \usage{
 webdriver_open(url, headless = TRUE, check = FALSE, verbose = FALSE)
 
 webdriver_close(webdriver)
+
+webdriver_wait_for_element(webdriver, By, value, timeout)
+
+webdriver_commands(webdriver, uuid)
+
+webdriver_get(uuid)
 }
 \arguments{
 \item{url}{The URL to navigate to.}
@@ -21,7 +30,19 @@ be useful for debugging.}
 \item{verbose}{See parameter in \code{\link[RSelenium]{rsDriver}}.}
 
 \item{webdriver}{Selenium server object.}
+
+\item{By}{Type of selector to use.}
+
+\item{value}{Value for selector.}
+
+\item{timeout}{Timeout in seconds.}
+
+\item{uuid}{The UUID of the dataset from datasets.json.}
+}
+\value{
+The function \code{webdriver_open} returns an HTML object created by \code{\link[xml2]{read_html}}.
 }
 \description{
 Navigate to a webpage using RSelenium server and tidy up afterwards.
+The primary command is \code{webdriver_get}.
 }
