@@ -4,7 +4,13 @@
 \alias{dl_dataset}
 \title{Download current version of a dataset catalogued in Covid19CanadaArchive}
 \usage{
-dl_dataset(uuid, file = NULL, sep = NULL, sheet = NULL)
+dl_dataset(
+  uuid,
+  file = NULL,
+  sep = NULL,
+  sheet = NULL,
+  webdriver_options = list(chromever = "latest", check = TRUE, verbose = FALSE)
+)
 }
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}
@@ -17,10 +23,13 @@ as a data frame).}
 
 \item{sheet}{An integer specifying the sheet to return for an XLSX or XLS
 file (by default, reads sheet 1 with a warning).}
+
+\item{webdriver_options}{Optionally, arguments for \code{\link[Covid19CanadaData]{webdriver_open}}
+provided as a named list.}
 }
 \value{
-The specified dataset either as a data frame in R (the default) or
-written to a file by (by specifying the argument `file`).
+The specified dataset either as a dataset loaded in R (the default)
+or written to a file by (by specifying the argument `file`).
 }
 \description{
 Download the current version of an active dataset listed in datasets.json of
@@ -28,6 +37,15 @@ Covid19CanadaArchive (https://github.com/ccodwg/Covid19CanadaArchive/blob/master
 Data can either be imported into R (the default) or written to a file by
 specifying the `file` argument. Currently, only CSV, JSON, XLSX, XLS, image
 and HTML datasets are supported for reading into R.
+}
+\details{
+Retrieving the HTML of webpages requiring JavaScript (args: js = True in
+datasets.json) uses \code{\link[RSelenium]{rsDriver}} from the
+\code{RSelenium} package. This requires a recent version of the Chrome/Chromium
+browser to be installed. If you are using a recent version but not the latest
+version, a version number for Chromedriver must be provided to
+\code{webdriver_options}. See \code{\link[Covid19CanadaData]{webdriver_get}}
+for more details.
 }
 \examples{
 \dontrun{

@@ -6,6 +6,14 @@
 #' specifying the `file` argument. Currently, only CSV, JSON, XLSX, XLS, image
 #' and HTML datasets are supported for reading into R.
 #'
+#' Retrieving the HTML of webpages requiring JavaScript (args: js = True in
+#' datasets.json) uses \code{\link[RSelenium]{rsDriver}} from the
+#' \code{RSelenium} package. This requires a recent version of the Chrome/Chromium
+#' browser to be installed. If you are using a recent version but not the latest
+#' version, a version number for Chromedriver must be provided to
+#' \code{webdriver_options}. See \code{\link[Covid19CanadaData]{webdriver_get}}
+#' for more details.
+#'
 #' @param uuid The UUID of the dataset from datasets.json.
 #' @param file A character string specifying the location to write the specified
 #' dataset as a file (NULL by default, resulting in the dataset being returned
@@ -13,8 +21,10 @@
 #' @param sep The separator to use when reading CSV files. Defaults to ",".
 #' @param sheet An integer specifying the sheet to return for an XLSX or XLS
 #' file (by default, reads sheet 1 with a warning).
-#' @return The specified dataset either as a data frame in R (the default) or
-#' written to a file by (by specifying the argument `file`).
+#' @param webdriver_options Optionally, arguments for \code{\link[Covid19CanadaData]{webdriver_open}}
+#' provided as a named list.
+#' @return The specified dataset either as a dataset loaded in R (the default)
+#' or written to a file by (by specifying the argument `file`).
 #' @examples
 #' \dontrun{
 #' # get PHAC epidemiology update CSV
@@ -27,7 +37,11 @@
 dl_dataset <- function(uuid,
                        file = NULL,
                        sep = NULL,
-                       sheet = NULL){
+                       sheet = NULL,
+                       webdriver_options = list(
+                         chromever = "latest",
+                         check = TRUE,
+                         verbose = FALSE)){
 
   # get datasets.json
   ds_list <- get_dataset_list()
@@ -90,7 +104,7 @@ dl_dataset <- function(uuid,
       dat <- magick::image_read(url)
     } else if (d$file_ext == "html") {
       if (!is.na(d$args$js) & d$args$js == "True") {
-        dat <- webdriver_get(uuid)
+        dat <- webdriver_get(uuid, webdriver_options)
       } else {
         if (!is.na(d$args$verify) & d$args$verify == "False") {
           # don't verify SSL certificate

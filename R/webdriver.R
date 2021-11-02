@@ -1,49 +1,100 @@
 #' Functions for RSelenium
 #'
 #' Navigate to a webpage using RSelenium server and tidy up afterwards.
-#' The primary command is \code{webdriver_get}.
+#' This is used for pages requiring JavaScript to load correctly.
+#' The primary command is \code{webdriver_get}, which is called by
+#' \code{\link[Covid19CanadaData]{dl_dataset}} when JavaScript is required. Note
+#' that this function requires a recent version of the Chrome/Chromium
+#' browser. If the latest version of Chrome/Chromium is not used, the version of
+#' Chromedriver must be manually specified in \code{webdriver_options$chromever}.
+#' Run \code{binman::list_versions("chromedriver")} for available versions.
 #' @name webdriver
 NULL
 
+#' @param uuid The UUID of the dataset from datasets.json.
+#' @param webdriver_options Optionally, arguments for \code{webdriver_open} provided
+#' as a named list.
+#' @rdname webdriver
+#' @return The function \code{webdriver_open} returns an HTML object created by \code{\link[xml2]{read_html}}.
+#' @export
+webdriver_get <- function(uuid,
+                          webdriver_options = list(
+                            chromever = "latest",
+                            check = TRUE,
+                            verbose = FALSE)) {
+  # check that dataset really requires webdriver
+  js <- get_dataset_arg(uuid, "js")
+  if (is.na(js) | js == "False") {
+    stop("This dataset does not need to be loaded using webdriver.")
+  }
+  # get URL of dataset
+  url <- get_dataset_url(uuid)
+  # open webdriver with specified options
+  if (is.list(webdriver_options)) {
+    if (!webdriver_options$chromever %in% c("latest", unlist(binman::list_versions("chromedriver"))))
+      webdriver_options$chromever <- "latest"
+    if (!isFALSE(webdriver_options$check)) {
+      webdriver_options$check <- TRUE
+    }
+    if (!isTRUE(webdriver_options$verbose)) {
+      webdriver_options$verbose <- FALSE
+    }
+  } else {
+    webdriver_options <- list(
+      chromever = "latest",
+      check = TRUE,
+      verbose = FALSE)
+  }
+  web <- webdriver_open(url,
+                        chromever = webdriver_options$chromever,
+                        check = webdriver_options$check,
+                        verbose = webdriver_options$verbose)
+  # run commands to drive webdriver
+  webdriver_commands(web, uuid)
+  # extract HTML
+  ds <- web$client$getPageSource()
+  # tidy up
+  webdriver_close(web)
+  # return HTML
+  xml2::read_html(ds[[1]])
+}
+
 #' @param url The URL to navigate to.
-#' @param headless Run in headless mode? Default: TRUE. Non-headless mode can
-#' be useful for debugging.
+#' @param chromever See parameter in \code{\link[RSelenium]{rsDriver}}.
 #' @param check See parameter in \code{\link[RSelenium]{rsDriver}}.
 #' @param verbose See parameter in \code{\link[RSelenium]{rsDriver}}.
 #' @rdname webdriver
 #' @export
-webdriver_open <- function(url, headless = TRUE, check = FALSE, verbose = FALSE) {
+webdriver_open <- function(url,
+                           chromever = "latest",
+                           check = TRUE,
+                           verbose = FALSE) {
 
-  # start Firefox
-  if (headless) {
-    ec <- list(
-      "moz:firefoxOptions" = list(
-        args = list('--headless')))
-  } else {
-    ec <- list()
-  }
+  # start Chrome/Chromium
+  ec <- list(chromeOptions = list(
+      args = c('--headless', '--disable-gpu')))
   webdriver <- RSelenium::rsDriver(
-    browser = "firefox",
+    browser = "chrome",
+    chromever = chromever,
     check = check,
     verbose = verbose,
-    extraCapabilities = ec)
+    extraCapabilities = ec,
+    geckover = NULL,
+    iedrver = NULL,
+    phantomver = NULL)
 
   # navigate to relevant content
-  webdriver$client$navigate(url)
+  tryCatch(
+    webdriver$client$navigate(url),
+    error = function (e) {
+      print(e)
+      warning("RSelenium had an error. Make sure a recent version of Chrome/Chromium is installed. If it is installed but is not the latest version, the Chromedriver version must be specified. See `?webdriver_get` for more details.")
+      webdriver$client$close() # try to close Selenium server
+    }
+  )
 
   # return webdriver
   return(webdriver)
-}
-
-#' @param webdriver Selenium server object.
-#' @rdname webdriver
-#' @export
-webdriver_close <- function(webdriver) {
-  webdriver$client$close()
-  out <- utils::capture.output(webdriver$server$stop())
-  if (!grepl("TRUE", out)) {
-    warning("Something went wrong when closing the Selenium server.")
-  }
 }
 
 #' Helper functions for webdriver navigation
@@ -74,6 +125,17 @@ webdriver_wait_for_element <- function(webdriver, By, value, timeout) {
   }
   # return element
   element
+}
+
+#' @param webdriver Selenium server object.
+#' @rdname webdriver
+#' @export
+webdriver_close <- function(webdriver) {
+  webdriver$client$close()
+  out <- utils::capture.output(webdriver$server$stop())
+  if (!grepl("TRUE", out)) {
+    warning("Something went wrong when closing the Selenium server.")
+  }
 }
 
 #' @param webdriver Selenium server object.
@@ -119,28 +181,4 @@ webdriver_commands <- function(webdriver, uuid) {
       Sys.sleep(get_dataset_arg(uuid, "wait"))
     }
   )
-}
-
-#' @param uuid The UUID of the dataset from datasets.json.
-#' @rdname webdriver
-#' @return The function \code{webdriver_open} returns an HTML object created by \code{\link[xml2]{read_html}}.
-#' @export
-webdriver_get <- function(uuid) {
-  # check that dataset really requires webdriver
-  js <- get_dataset_arg(uuid, "js")
-  if (is.na(js) | js == "False") {
-    stop("This dataset does not need to be loaded using webdriver.")
-  }
-  # get URL of dataset
-  url <- get_dataset_url(uuid)
-  # open webdriver
-  web <- webdriver_open(url)
-  # run commands to drive webdriver
-  webdriver_commands(web, uuid)
-  # extract HTML
-  ds <- web$client$getPageSource()
-  # tidy up
-  webdriver_close(web)
-  # return HTML
-  xml2::read_html(ds[[1]])
 }

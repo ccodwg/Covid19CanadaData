@@ -2,28 +2,35 @@
 % Please edit documentation in R/webdriver.R
 \name{webdriver}
 \alias{webdriver}
-\alias{webdriver_open}
-\alias{webdriver_close}
-\alias{webdriver_wait_for_element}
-\alias{webdriver_commands}
 \alias{webdriver_get}
+\alias{webdriver_open}
+\alias{webdriver_wait_for_element}
+\alias{webdriver_close}
+\alias{webdriver_commands}
 \title{Functions for RSelenium}
 \usage{
-webdriver_open(url, headless = TRUE, check = FALSE, verbose = FALSE)
+webdriver_get(
+  uuid,
+  webdriver_options = list(chromever = "latest", check = TRUE, verbose = FALSE)
+)
 
-webdriver_close(webdriver)
+webdriver_open(url, chromever = "latest", check = TRUE, verbose = FALSE)
 
 webdriver_wait_for_element(webdriver, By, value, timeout)
 
-webdriver_commands(webdriver, uuid)
+webdriver_close(webdriver)
 
-webdriver_get(uuid)
+webdriver_commands(webdriver, uuid)
 }
 \arguments{
+\item{uuid}{The UUID of the dataset from datasets.json.}
+
+\item{webdriver_options}{Optionally, arguments for \code{webdriver_open} provided
+as a named list.}
+
 \item{url}{The URL to navigate to.}
 
-\item{headless}{Run in headless mode? Default: TRUE. Non-headless mode can
-be useful for debugging.}
+\item{chromever}{See parameter in \code{\link[RSelenium]{rsDriver}}.}
 
 \item{check}{See parameter in \code{\link[RSelenium]{rsDriver}}.}
 
@@ -36,13 +43,17 @@ be useful for debugging.}
 \item{value}{Value for selector.}
 
 \item{timeout}{Timeout in seconds.}
-
-\item{uuid}{The UUID of the dataset from datasets.json.}
 }
 \value{
 The function \code{webdriver_open} returns an HTML object created by \code{\link[xml2]{read_html}}.
 }
 \description{
 Navigate to a webpage using RSelenium server and tidy up afterwards.
-The primary command is \code{webdriver_get}.
+This is used for pages requiring JavaScript to load correctly.
+The primary command is \code{webdriver_get}, which is called by
+\code{\link[Covid19CanadaData]{dl_dataset}} when JavaScript is required. Note
+that this function requires a recent version of the Chrome/Chromium
+browser. If the latest version of Chrome/Chromium is not used, the version of
+Chromedriver must be manually specified in \code{webdriver_options$chromever}.
+Run \code{binman::list_versions("chromedriver")} for available versions.
 }
