@@ -49,6 +49,25 @@ webdriver_open <- function(url, host) {
     docker <- docker_connect(host)
   }
 
+  # select correct architecture for image
+  if (Sys.info()["machine"] == "arm64") {
+    # arm64
+    img <- "seleniarm/standalone-chromium"
+    img_url <- "https://hub.docker.com/r/seleniarm/standalone-chromium"
+  } else {
+    # x86_64
+    img <- "selenium/standalone-chrome"
+    img_url <- "https://hub.docker.com/r/selenium/standalone-chrome"
+  }
+
+  # check if image is available and if not, ask before downloading
+  imgs <- unlist(docker$image$list()[["repo_tags"]])
+  if (!paste0(img, ":latest") %in% imgs) {
+    message(paste0("This dataset requires Selenium to download. Would you like to install Docker image '", img, "' from '", img_url, "'?"))
+    resp <- readline(prompt = "Type 'Yes' without quotes to continue (any other action will abort the process): ")
+    if (!resp == "Yes") stop("You must install the Docker image to download this dataset.")
+  }
+
   # close running container on port 4445 (i.e., if a previous container failed to close)
   tryCatch(
     {
@@ -61,7 +80,7 @@ webdriver_open <- function(url, host) {
   )
 
   # start Chrome
-  cnt <- docker$container$run("selenium/standalone-chrome",
+  cnt <- docker$container$run(img,
                               ports = "4445:4444",
                               detach = TRUE)
 
