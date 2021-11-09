@@ -52,17 +52,17 @@ webdriver_open <- function(url, host) {
   # select correct architecture for image
   if (Sys.info()["machine"] == "arm64") {
     # arm64
-    img <- "seleniarm/standalone-chromium"
+    img <- "seleniarm/standalone-chromium:4.0.0-beta-1-20210215"
     img_url <- "https://hub.docker.com/r/seleniarm/standalone-chromium"
   } else {
     # x86_64
-    img <- "selenium/standalone-chrome"
+    img <- "selenium/standalone-chrome:latest"
     img_url <- "https://hub.docker.com/r/selenium/standalone-chrome"
   }
 
   # check if image is available and if not, ask before downloading
   imgs <- unlist(docker$image$list()[["repo_tags"]])
-  if (!paste0(img, ":latest") %in% imgs) {
+  if (!img %in% imgs) {
     message(paste0("This dataset requires Selenium to download. Would you like to install Docker image '", img, "' from '", img_url, "'?"))
     resp <- readline(prompt = "Type 'Yes' without quotes to continue (any other action will abort the process): ")
     if (!resp == "Yes") stop("You must install the Docker image to download this dataset.")
