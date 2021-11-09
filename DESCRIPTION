@@ -29,5 +29,8 @@ Imports:
     rvest,
     stringr,
     xml2,
-    RSelenium
+    RSelenium,
+    stevedore
+Suggests:
+    reticulate
 RoxygenNote: 7.1.2

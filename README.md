@@ -29,6 +29,20 @@ You can install the development version of Covid19CanadaData from [GitHub](https
 devtools::install_github("ccodwg/Covid19CanadaData")
 ```
 
+Note that for webpages requiring JavaScript to render their contents, Docker
+must be installed the Docker daemon must be running and available. See
+[install instructions](https://docs.docker.com/get-docker/) for Docker Desktop
+on Windows and Mac. On Linux, rootless Docker should be installed by running the
+below command and following the instructions:
+
+```
+curl -sSL https://get.docker.com/rootless | sh
+```
+
+On Windows, a Python installation with the packages `docker` and `pypiwin32` and
+the R package `reticulate` are further required; see [here](https://github.com/richfitz/stevedore#windows-support)
+for more details.
+
 ## Examples
 
 ### Live Canadian COVID-19 datasets

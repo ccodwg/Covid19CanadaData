@@ -2,32 +2,35 @@
 % Please edit documentation in R/webdriver.R
 \name{webdriver}
 \alias{webdriver}
+\alias{webdriver_get}
 \alias{webdriver_open}
 \alias{webdriver_close}
+\alias{docker_connect}
 \alias{webdriver_wait_for_element}
 \alias{webdriver_commands}
-\alias{webdriver_get}
-\title{Functions for RSelenium}
+\title{Functions for RSelenium webdriver}
 \usage{
-webdriver_open(url, headless = TRUE, check = FALSE, verbose = FALSE)
+webdriver_get(uuid)
 
-webdriver_close(webdriver)
+webdriver_open(url, host)
+
+webdriver_close(webdriver, host)
+
+docker_connect(host)
 
 webdriver_wait_for_element(webdriver, By, value, timeout)
 
 webdriver_commands(webdriver, uuid)
-
-webdriver_get(uuid)
 }
 \arguments{
+\item{uuid}{The UUID of the dataset from datasets.json.}
+
 \item{url}{The URL to navigate to.}
 
-\item{headless}{Run in headless mode? Default: TRUE. Non-headless mode can
-be useful for debugging.}
-
-\item{check}{See parameter in \code{\link[RSelenium]{rsDriver}}.}
-
-\item{verbose}{See parameter in \code{\link[RSelenium]{rsDriver}}.}
+\item{host}{Optional. The URL of the Docker daemon. See parameter in
+\code{\link[stevedore]{docker_client}} for details/defaults. The default for
+Linux has been changed for this function: "unix:///run/user/1000/docker.sock"
+(i.e., rootless Docker).}
 
 \item{webdriver}{Selenium server object.}
 
@@ -36,13 +39,14 @@ be useful for debugging.}
 \item{value}{Value for selector.}
 
 \item{timeout}{Timeout in seconds.}
-
-\item{uuid}{The UUID of the dataset from datasets.json.}
 }
 \value{
-The function \code{webdriver_open} returns an HTML object created by \code{\link[xml2]{read_html}}.
+The function \code{webdriver_get} returns an HTML object created by \code{\link[xml2]{read_html}}.
 }
 \description{
-Navigate to a webpage using RSelenium server and tidy up afterwards.
-The primary command is \code{webdriver_get}.
+Navigate to a webpage using RSelenium server and the Chrome browser running
+in a Docker container (on port 4445), acquire the rendered HTML source
+and tidy up afterwards. The primary command is \code{webdriver_get}. This
+command is used by \code{\link[Covid19CanadaData]{dl_dataset}} for HTML
+pages requiring JavaScript to render.
 }

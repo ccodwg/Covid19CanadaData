@@ -4,7 +4,8 @@
 #' Covid19CanadaArchive (https://github.com/ccodwg/Covid19CanadaArchive/blob/master/datasets.json).
 #' Data can either be imported into R (the default) or written to a file by
 #' specifying the `file` argument. Currently, only CSV, JSON, XLSX, XLS, image
-#' and HTML datasets are supported for reading into R.
+#' and HTML datasets are supported for reading into R. Websites requiring JavaScript
+#' to render require `Docker` to be installed; see \code{\link[Covid19CanadaData]{webdriver}}.
 #'
 #' @param uuid The UUID of the dataset from datasets.json.
 #' @param file A character string specifying the location to write the specified
@@ -13,6 +14,7 @@
 #' @param sep The separator to use when reading CSV files. Defaults to ",".
 #' @param sheet An integer specifying the sheet to return for an XLSX or XLS
 #' file (by default, reads sheet 1 with a warning).
+#' @param host Optional. The URL of the Docker daemon. See \code{\link[Covid19CanadaData]{webdriver}}.
 #' @return The specified dataset either as a data frame in R (the default) or
 #' written to a file by (by specifying the argument `file`).
 #' @examples
@@ -27,7 +29,8 @@
 dl_dataset <- function(uuid,
                        file = NULL,
                        sep = NULL,
-                       sheet = NULL){
+                       sheet = NULL,
+                       host){
 
   # get datasets.json
   ds_list <- get_dataset_list()

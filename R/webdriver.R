@@ -1,55 +1,163 @@
-#' Functions for RSelenium
+#' Functions for RSelenium webdriver
 #'
-#' Navigate to a webpage using RSelenium server and tidy up afterwards.
-#' The primary command is \code{webdriver_get}.
+#' Navigate to a webpage using RSelenium server and the Chrome browser running
+#' in a Docker container (on port 4445), acquire the rendered HTML source
+#' and tidy up afterwards. The primary command is \code{webdriver_get}. This
+#' command is used by \code{\link[Covid19CanadaData]{dl_dataset}} for HTML
+#' pages requiring JavaScript to render.
 #' @name webdriver
 NULL
 
+#' @param uuid The UUID of the dataset from datasets.json.
+#' @rdname webdriver
+#' @return The function \code{webdriver_get} returns an HTML object created by \code{\link[xml2]{read_html}}.
+#' @export
+webdriver_get <- function(uuid) {
+
+  # check that dataset really requires webdriver
+  js <- get_dataset_arg(uuid, "js")
+  if (is.na(js) | js == "False") {
+    stop("This dataset does not need to be loaded using webdriver.")
+  }
+  # get URL of dataset
+  url <- get_dataset_url(uuid)
+  # open webdriver
+  web <- webdriver_open(url)
+  # run commands to drive webdriver
+  webdriver_commands(web, uuid)
+  # extract HTML
+  ds <- web$getPageSource()
+  # tidy up
+  webdriver_close(web)
+  # return HTML
+  xml2::read_html(ds[[1]])
+}
+
 #' @param url The URL to navigate to.
-#' @param headless Run in headless mode? Default: TRUE. Non-headless mode can
-#' be useful for debugging.
-#' @param check See parameter in \code{\link[RSelenium]{rsDriver}}.
-#' @param verbose See parameter in \code{\link[RSelenium]{rsDriver}}.
+#' @param host Optional. The URL of the Docker daemon. See parameter in
+#' \code{\link[stevedore]{docker_client}} for details/defaults. The default for
+#' Linux has been changed for this function: "unix:///run/user/1000/docker.sock"
+#' (i.e., rootless Docker).
 #' @rdname webdriver
 #' @export
-webdriver_open <- function(url, headless = TRUE, check = FALSE, verbose = FALSE) {
+webdriver_open <- function(url, host) {
 
-  # start Firefox
-  if (headless) {
-    ec <- list(
-      "moz:firefoxOptions" = list(
-        args = list('--headless')))
+  # connect to Docker
+  if (missing(host)) {
+    docker <- docker_connect()
   } else {
-    ec <- list()
+    docker <- docker_connect(host)
   }
-  webdriver <- RSelenium::rsDriver(
-    browser = "firefox",
-    check = check,
-    verbose = verbose,
-    extraCapabilities = ec)
+
+  # close running container on port 4445 (i.e., if a previous container failed to close)
+  tryCatch(
+    {
+      id <- docker$container$list(filter = c("publish" = "4445"))$id
+      docker$container$get(id)$stop()
+      docker$container$remove(id)
+      cat("Closed existing container at port 4445.", fill = TRUE)
+    },
+    error = function(e) {}
+  )
+
+  # start Chrome
+  cnt <- docker$container$run("selenium/standalone-chrome",
+                              ports = "4445:4444",
+                              detach = TRUE)
+
+  # connect to headless Chrome
+  webdriver <- RSelenium::remoteDriver(
+    # remoteServerAddr = "localhost",
+    port = 4445L,
+    browserName = "chrome")
+
+  # try to connect to the server for 30 seconds
+  webdriver_success <- FALSE
+  start_time <- Sys.time()
+  while(Sys.time() < start_time + 30 & !webdriver_success) {
+    tryCatch(
+      {
+        sink <- utils::capture.output(webdriver$open())
+        webdriver_success <- TRUE
+        }, # don't print output
+      error = function(e){})
+  }
+  if (!webdriver_success) {stop("Failed to connect to webdriver after 30 seconds.")}
 
   # navigate to relevant content
-  webdriver$client$navigate(url)
+  webdriver$navigate(url)
 
   # return webdriver
   return(webdriver)
 }
 
 #' @param webdriver Selenium server object.
+#' @param host Optional. The URL of the Docker daemon. See parameter in
+#' \code{\link[stevedore]{docker_client}} for details/defaults. The default for
+#' Linux has been changed for this function: "unix:///run/user/1000/docker.sock"
+#' (i.e., rootless docker).
 #' @rdname webdriver
 #' @export
-webdriver_close <- function(webdriver) {
-  webdriver$client$close()
-  out <- utils::capture.output(webdriver$server$stop())
-  if (!grepl("TRUE", out)) {
-    warning("Something went wrong when closing the Selenium server.")
+webdriver_close <- function(webdriver, host) {
+  # close connection to server
+  webdriver$close()
+  # connect to Docker
+  if (missing(host)) {
+    docker <- docker_connect()
+  } else {
+    docker <- docker_connect(host)
   }
+  # close the running Docker container
+  tryCatch(
+    {
+      id <- docker$container$list(filter = c("publish" = "4445"))$id
+      docker$container$get(id)$stop()
+      docker$container$remove(id)
+    },
+    error = function(e) {
+      print(e)
+      warning("Container failed to close.")
+    }
+  )
 }
 
-#' Helper functions for webdriver navigation
-#'
-#' @name webdriver
-NULL
+#' docker_connect: Connect to running Docker daemon
+#' @param host Optional. The URL of the Docker daemon. See parameter in
+#' \code{\link[stevedore]{docker_client}} for details/defaults. The default for
+#' Linux has been changed for this function: "unix:///run/user/1000/docker.sock"
+#' (i.e., rootless Docker).
+#' @rdname webdriver
+#' @export
+docker_connect <- function(host) {
+  # check Docker is available
+  docker_instructions <- "Docker must be installed and the Docker daemon running and available. See install instructions for Docker Desktop on Windows and Mac: https://docs.docker.com/get-docker/"
+  if (Sys.info()["sysname"] == "Linux") docker_instructions <- paste0(docker_instructions, "\n\nFor Linux, Docker must be available without sudo.\n\nThis may be achieved by installing rootless Docker (strongly recommended; run `curl -sSL https://get.docker.com/rootless | sh` and follow instructions) or creating a docker Unix group (security risk; https://docs.docker.com/engine/install/linux-postinstall/).\n\nThis function assumes rootless Docker and by default runs using host `unix:///run/user/1000/docker.sock`. This can be overridden using the 'host' argument.)")
+  if (Sys.info()["sysname"] == "Windows") docker_instructions <- paste0(docker_instructions, "\n\nFor Windows, a Python installation with the packages `docker` and `pypiwin32` and the R package `reticulate` are further required; see: https://github.com/richfitz/stevedore#windows-support")
+  if (missing(host)) {
+    if (Sys.info()["sysname"] == "Linux") {
+      if (!suppressMessages(stevedore::docker_available(host = "unix:///run/user/1000/docker.sock",
+                                       verbose = TRUE))) {
+        stop(docker_instructions)
+      }} else {
+        if (!suppressMessages(stevedore::docker_available(verbose = TRUE))) {
+          stop(docker_instructions)
+        }}
+  } else {
+    if (!suppressMessages(stevedore::docker_available(host = host, verbose = TRUE))) {
+      stop(docker_instructions)
+    }
+  }
+  # connect to Docker
+  if (missing(host)) {
+    if (Sys.info()["sysname"] == "Linux") {
+      docker <- suppressMessages(stevedore::docker_client(host = "unix:///run/user/1000/docker.sock"))
+    } else {
+      docker <- suppressMessages(stevedore::docker_client())
+    }
+  } else {
+    docker <- suppressMessages(stevedore::docker_client(host = host))
+  }
+}
 
 #' webdriver_wait_for_element: Wait until element is visible
 #' @param webdriver Selenium server object.
@@ -64,8 +172,8 @@ webdriver_wait_for_element <- function(webdriver, By, value, timeout) {
   # check for element
   element <- NULL
   while (is.null(element)) {
-    element <- suppressWarnings(
-      tryCatch({webdriver$client$findElement(using = By, value = value)},
+    element <- suppressMessages(
+      tryCatch({webdriver$findElement(using = By, value = value)},
                error = function(e){NULL}))
     # check timeout
     if (as.numeric(Sys.time() - start_time) > timeout) {
@@ -119,28 +227,4 @@ webdriver_commands <- function(webdriver, uuid) {
       Sys.sleep(get_dataset_arg(uuid, "wait"))
     }
   )
-}
-
-#' @param uuid The UUID of the dataset from datasets.json.
-#' @rdname webdriver
-#' @return The function \code{webdriver_open} returns an HTML object created by \code{\link[xml2]{read_html}}.
-#' @export
-webdriver_get <- function(uuid) {
-  # check that dataset really requires webdriver
-  js <- get_dataset_arg(uuid, "js")
-  if (is.na(js) | js == "False") {
-    stop("This dataset does not need to be loaded using webdriver.")
-  }
-  # get URL of dataset
-  url <- get_dataset_url(uuid)
-  # open webdriver
-  web <- webdriver_open(url)
-  # run commands to drive webdriver
-  webdriver_commands(web, uuid)
-  # extract HTML
-  ds <- web$client$getPageSource()
-  # tidy up
-  webdriver_close(web)
-  # return HTML
-  xml2::read_html(ds[[1]])
 }
