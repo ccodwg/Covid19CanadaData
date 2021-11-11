@@ -52,7 +52,7 @@ webdriver_open <- function(url, host) {
   # select correct architecture for image
   if (Sys.info()["machine"] == "arm64") {
     # arm64
-    img <- "seleniarm/standalone-chromium:4.0.0-beta-1-20210215"
+    img <- "seleniarm/standalone-chromium:latest"
     img_url <- "https://hub.docker.com/r/seleniarm/standalone-chromium"
   } else {
     # x86_64
