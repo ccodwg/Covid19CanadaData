@@ -84,11 +84,20 @@ webdriver_open <- function(url, host) {
                               ports = "4445:4444",
                               detach = TRUE)
 
+  # add extra capabilities
+  ec <- list(chromeOptions = list(
+    args = c(
+      "--headless",
+      "--disable-dev-shm-usage"
+      )
+  ))
+
   # connect to headless Chrome
   webdriver <- RSelenium::remoteDriver(
     # remoteServerAddr = "localhost",
     port = 4445L,
-    browserName = "chrome")
+    browserName = "chrome",
+    extraCapabilities = ec)
 
   # try to connect to the server for 30 seconds
   webdriver_success <- FALSE
