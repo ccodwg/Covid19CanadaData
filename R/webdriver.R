@@ -219,6 +219,7 @@ webdriver_wait_for_element <- function(webdriver, By, value, timeout) {
 webdriver_commands <- function(webdriver, uuid) {
   switch(
     uuid,
+    # NWT - testing tab
     "66fbe91e-34c0-4f7f-aa94-cf6c14db0158" = {
       elm <- webdriver_wait_for_element(
         webdriver,
@@ -231,6 +232,7 @@ webdriver_commands <- function(webdriver, uuid) {
       # wait for page to load
       Sys.sleep(get_dataset_arg(uuid, "wait"))
     },
+    # NWT - vaccine doses tab
     "454de458-f7b4-4814-96a6-5a426f8c8c60" = {
       # click on vaccine doses tab dropdown (when element is visible)
       elm <- webdriver_wait_for_element(
@@ -249,6 +251,19 @@ webdriver_commands <- function(webdriver, uuid) {
         10)$clickElement()
       # wait for page to load
       Sys.sleep(get_dataset_arg(uuid, "wait"))
+    },
+    # Wellington Dufferin Guelph - cases tab
+    "e00e2148-b0ea-458b-9f00-3533e0c5ae8e" = {
+      # click on cases tab (when element is visible)
+      elm <- webdriver_wait_for_element(
+        webdriver,
+        "xpath",
+        "/html/body/div[1]/root/div/div/div[1]/div/div/div/exploration-container/div/div/div/exploration-host/div/div/exploration/div/explore-canvas/div/div[2]/div/div[2]/div[2]/visual-container-repeat/visual-container-group[2]/transform/div/div[2]/visual-container[3]/transform/div/div[3]/div/visual-modern",
+        get_dataset_arg(uuid, "wait"))
+      # click tab
+      elm$clickElement()
+      # wait for page to load
+      Sys.sleep(5)
     },
     {
       # by default, just wait for page to load
