@@ -97,6 +97,12 @@ dl_dataset_dyn_url <- function(uuid) {
     "2e7a5549-92ae-473d-a97a-7b8e0c1ddbbc" = {
       rvest::html_attr(rvest::html_element(rvest::read_html('https://www.bchu.org/ServicesWeProvide/InfectiousDiseases/Pages/coronavirus.aspx'), 'iframe'), 'src')
     },
+    "fe08035c-2c03-4960-a642-bde1fe18c857" = {
+      rvest::html_attr(rvest::html_element(rvest::read_html('https://ckphu.com/current-situation-in-chatham-kent/'), 'iframe'), 'src')
+    },
+    "83d1fa13-7fb3-4079-b3dc-5bc50c584fd3" = {
+      rvest::html_attr(rvest::html_element(rvest::read_html('https://www.kflaph.ca/en/healthy-living/status-of-cases-in-kfla.aspx'), 'iframe'), 'src')
+    },
     stop("Specified UUID does not exist in dasets.json or does not have a dynamic URL.")
   )
 }
