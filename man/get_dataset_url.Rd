@@ -13,5 +13,5 @@ get_dataset_url(uuid)
 The URL of the specified dataset.
 }
 \description{
-Get URL of dataset by UUID
+If the URL is dynamic, the current URL will be calculated and returned.
 }

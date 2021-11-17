@@ -22,12 +22,18 @@ get_dataset_list <- function() {
 
 #' Get URL of dataset by UUID
 #'
+#' If the URL is dynamic, the current URL will be calculated and returned.
+#'
 #' @param uuid The UUID of the dataset from datasets.json.
 #' @return The URL of the specified dataset.
 #' @export
 get_dataset_url <- function(uuid) {
   ds_list <- get_dataset_list()
-  ds_list[ds_list$uuid == uuid, "url"]
+  url <- ds_list[ds_list$uuid == uuid, "url"]
+  if (is.na(url)) {
+    url <- dl_dataset_dyn_url(uuid)
+  }
+  return(url)
 }
 
 #' Get argument of dataset by UUID

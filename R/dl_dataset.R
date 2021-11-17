@@ -46,11 +46,7 @@ dl_dataset <- function(uuid,
   }
 
   # if URL is not static, get URL
-  if (!is.na(d$url)) {
-    url <- d$url
-  } else {
-    url <- dl_dataset_dyn_url(uuid)
-  }
+  url <- get_dataset_url(uuid)
 
   # create curl handle
   h <- curl::new_handle()
