@@ -10,9 +10,9 @@
 \alias{webdriver_commands}
 \title{Functions for RSelenium webdriver}
 \usage{
-webdriver_get(uuid)
+webdriver_get(uuid, host, port)
 
-webdriver_open(url, host)
+webdriver_open(url, host, port)
 
 webdriver_close(webdriver, host)
 
@@ -25,12 +25,15 @@ webdriver_commands(webdriver, uuid)
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}
 
-\item{url}{The URL to navigate to.}
-
 \item{host}{Optional. The URL of the Docker daemon. See parameter in
 \code{\link[stevedore]{docker_client}} for details/defaults. The default for
 Linux has been changed for this function: "unix:///run/user/1000/docker.sock"
 (i.e., rootless Docker).}
+
+\item{port}{Optional. The host port for Docker. If not provided, a random
+open port will be selected using \code{\link[httpuv]{randomPort}}.}
+
+\item{url}{The URL to navigate to.}
 
 \item{webdriver}{Selenium server object.}
 
@@ -45,8 +48,8 @@ The function \code{webdriver_get} returns an HTML object created by \code{\link[
 }
 \description{
 Navigate to a webpage using RSelenium server and the Chrome browser running
-in a Docker container (on port 4445), acquire the rendered HTML source
-and tidy up afterwards. The primary command is \code{webdriver_get}. This
-command is used by \code{\link[Covid19CanadaData]{dl_dataset}} for HTML
-pages requiring JavaScript to render.
+in a Docker container, acquire the rendered HTML source and tidy up
+afterwards. The primary command is \code{webdriver_get}. This command is used
+by \code{\link[Covid19CanadaData]{dl_dataset}} for HTML pages requiring
+JavaScript to render.
 }

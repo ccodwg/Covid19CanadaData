@@ -30,7 +30,8 @@ Imports:
     stringr,
     xml2,
     RSelenium,
-    stevedore
+    stevedore,
+    httpuv
 Suggests:
     reticulate
 RoxygenNote: 7.1.2

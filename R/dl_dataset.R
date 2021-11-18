@@ -15,6 +15,8 @@
 #' @param sheet An integer specifying the sheet to return for an XLSX or XLS
 #' file (by default, reads sheet 1 with a warning).
 #' @param host Optional. The URL of the Docker daemon. See \code{\link[Covid19CanadaData]{webdriver}}.
+#' @param port Optional. The host port for Docker. If not provided, a random
+#' open port will be selected using \code{\link[httpuv]{randomPort}}.
 #' @return The specified dataset either as a data frame in R (the default) or
 #' written to a file by (by specifying the argument `file`).
 #' @examples
@@ -30,7 +32,8 @@ dl_dataset <- function(uuid,
                        file = NULL,
                        sep = NULL,
                        sheet = NULL,
-                       host){
+                       host,
+                       port) {
 
   # get datasets.json
   ds_list <- get_dataset_list()

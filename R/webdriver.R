@@ -1,18 +1,24 @@
 #' Functions for RSelenium webdriver
 #'
 #' Navigate to a webpage using RSelenium server and the Chrome browser running
-#' in a Docker container (on port 4445), acquire the rendered HTML source
-#' and tidy up afterwards. The primary command is \code{webdriver_get}. This
-#' command is used by \code{\link[Covid19CanadaData]{dl_dataset}} for HTML
-#' pages requiring JavaScript to render.
+#' in a Docker container, acquire the rendered HTML source and tidy up
+#' afterwards. The primary command is \code{webdriver_get}. This command is used
+#' by \code{\link[Covid19CanadaData]{dl_dataset}} for HTML pages requiring
+#' JavaScript to render.
 #' @name webdriver
 NULL
 
 #' @param uuid The UUID of the dataset from datasets.json.
+#' @param host Optional. The URL of the Docker daemon. See parameter in
+#' \code{\link[stevedore]{docker_client}} for details/defaults. The default for
+#' Linux has been changed for this function: "unix:///run/user/1000/docker.sock"
+#' (i.e., rootless Docker).
+#' @param port Optional. The host port for Docker. If not provided, a random
+#' open port will be selected using \code{\link[httpuv]{randomPort}}.
 #' @rdname webdriver
 #' @return The function \code{webdriver_get} returns an HTML object created by \code{\link[xml2]{read_html}}.
 #' @export
-webdriver_get <- function(uuid) {
+webdriver_get <- function(uuid, host, port) {
 
   # check that dataset really requires webdriver
   js <- get_dataset_arg(uuid, "js")
@@ -22,13 +28,30 @@ webdriver_get <- function(uuid) {
   # get URL of dataset
   url <- get_dataset_url(uuid)
   # open webdriver
+  if (!missing(host)) {
+    if (!missing(port)) {
+      webdriver_open(url, host, port)
+    } else {
+      webdriver_open(url, host)
+    }
+  } else {
+    if (!missing(port)) {
+      webdriver_open(url, port = port)
+    } else {
+      webdriver_open(url)
+    }
+  }
   web <- webdriver_open(url)
   # run commands to drive webdriver
   webdriver_commands(web, uuid)
   # extract HTML
   ds <- web$getPageSource()
   # tidy up
-  webdriver_close(web)
+  if (!missing(host)) {
+    webdriver_close(web, host)
+  } else {
+    webdriver_close(web)
+  }
   # return HTML
   xml2::read_html(ds[[1]])
 }
@@ -38,15 +61,22 @@ webdriver_get <- function(uuid) {
 #' \code{\link[stevedore]{docker_client}} for details/defaults. The default for
 #' Linux has been changed for this function: "unix:///run/user/1000/docker.sock"
 #' (i.e., rootless Docker).
+#' @param port Optional. The host port for Docker. If not provided, a random
+#' open port will be selected using \code{\link[httpuv]{randomPort}}.
 #' @rdname webdriver
 #' @export
-webdriver_open <- function(url, host) {
+webdriver_open <- function(url, host, port) {
 
   # connect to Docker
   if (missing(host)) {
     docker <- docker_connect()
   } else {
     docker <- docker_connect(host)
+  }
+
+  # select random open port if port is not provided
+  if (missing(port)) {
+    port <- httpuv::randomPort()
   }
 
   # select correct architecture for image
@@ -68,20 +98,9 @@ webdriver_open <- function(url, host) {
     if (!resp == "Yes") stop("You must install the Docker image to download this dataset.")
   }
 
-  # close running container on port 4445 (i.e., if a previous container failed to close)
-  tryCatch(
-    {
-      id <- docker$container$list(filter = c("publish" = "4445"))$id
-      docker$container$get(id)$stop()
-      docker$container$remove(id)
-      cat("Closed existing container at port 4445.", fill = TRUE)
-    },
-    error = function(e) {}
-  )
-
   # start Chrome
   cnt <- docker$container$run(img,
-                              ports = "4445:4444",
+                              ports = paste0(port, ":4444"),
                               detach = TRUE)
 
   # add extra capabilities
@@ -95,7 +114,7 @@ webdriver_open <- function(url, host) {
   # connect to headless Chrome
   webdriver <- RSelenium::remoteDriver(
     # remoteServerAddr = "localhost",
-    port = 4445L,
+    port = port,
     browserName = "chrome",
     extraCapabilities = ec)
 
@@ -129,6 +148,8 @@ webdriver_open <- function(url, host) {
 webdriver_close <- function(webdriver, host) {
   # close connection to server
   webdriver$close()
+  # get Docker host port
+  port <- as.character(webdriver[["port"]])
   # connect to Docker
   if (missing(host)) {
     docker <- docker_connect()
@@ -138,9 +159,9 @@ webdriver_close <- function(webdriver, host) {
   # close the running Docker container
   tryCatch(
     {
-      id <- docker$container$list(filter = c("publish" = "4445"))$id
-      docker$container$get(id)$stop()
-      docker$container$remove(id)
+      docker_image_id <- docker$container$list(filter = c("publish" = port))$id
+      docker$container$get(docker_image_id)$stop()
+      docker$container$remove(docker_image_id)
     },
     error = function(e) {
       print(e)

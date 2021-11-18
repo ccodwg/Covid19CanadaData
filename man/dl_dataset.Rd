@@ -4,7 +4,7 @@
 \alias{dl_dataset}
 \title{Download current version of a dataset catalogued in Covid19CanadaArchive}
 \usage{
-dl_dataset(uuid, file = NULL, sep = NULL, sheet = NULL, host)
+dl_dataset(uuid, file = NULL, sep = NULL, sheet = NULL, host, port)
 }
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}
@@ -19,6 +19,9 @@ as a data frame).}
 file (by default, reads sheet 1 with a warning).}
 
 \item{host}{Optional. The URL of the Docker daemon. See \code{\link[Covid19CanadaData]{webdriver}}.}
+
+\item{port}{Optional. The host port for Docker. If not provided, a random
+open port will be selected using \code{\link[httpuv]{randomPort}}.}
 }
 \value{
 The specified dataset either as a data frame in R (the default) or
