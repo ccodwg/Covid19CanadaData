@@ -12,7 +12,8 @@ NULL
 #' @param host Optional. The URL of the Docker daemon. See parameter in
 #' \code{\link[stevedore]{docker_client}} for details/defaults. The default for
 #' Linux has been changed for this function: "unix:///run/user/1000/docker.sock"
-#' (i.e., rootless Docker).
+#' (i.e., rootless Docker). Can be set in `options(docker_host = "path/to/host")`
+#' (this will override the provided `host` parameter).
 #' @param port Optional. The host port for Docker. If not provided, a random
 #' open port will be selected using \code{\link[httpuv]{randomPort}}.
 #' @rdname webdriver
@@ -60,7 +61,8 @@ webdriver_get <- function(uuid, host, port) {
 #' @param host Optional. The URL of the Docker daemon. See parameter in
 #' \code{\link[stevedore]{docker_client}} for details/defaults. The default for
 #' Linux has been changed for this function: "unix:///run/user/1000/docker.sock"
-#' (i.e., rootless Docker).
+#' (i.e., rootless Docker). Can be set in `options(docker_host = "path/to/host")`
+#' (this will override the provided `host` parameter).
 #' @param port Optional. The host port for Docker. If not provided, a random
 #' open port will be selected using \code{\link[httpuv]{randomPort}}.
 #' @rdname webdriver
@@ -142,7 +144,8 @@ webdriver_open <- function(url, host, port) {
 #' @param host Optional. The URL of the Docker daemon. See parameter in
 #' \code{\link[stevedore]{docker_client}} for details/defaults. The default for
 #' Linux has been changed for this function: "unix:///run/user/1000/docker.sock"
-#' (i.e., rootless docker).
+#' (i.e., rootless Docker). Can be set in `options(docker_host = "path/to/host")`
+#' (this will override the provided `host` parameter).
 #' @rdname webdriver
 #' @export
 webdriver_close <- function(webdriver, host) {
@@ -174,13 +177,19 @@ webdriver_close <- function(webdriver, host) {
 #' @param host Optional. The URL of the Docker daemon. See parameter in
 #' \code{\link[stevedore]{docker_client}} for details/defaults. The default for
 #' Linux has been changed for this function: "unix:///run/user/1000/docker.sock"
-#' (i.e., rootless Docker).
+#' (i.e., rootless Docker). Can be set in `options(docker_host = "path/to/host")`
+#' (this will override the provided `host` parameter).
 #' @rdname webdriver
 #' @export
 docker_connect <- function(host) {
+  # check if docker_host is set in options (this will override the provided host parameter)
+  docker_host <- getOption("docker_host")
+  if (!is.null(docker_host)) {
+    host <- docker_host
+  }
   # check Docker is available
   docker_instructions <- "Docker must be installed and the Docker daemon running and available. See install instructions for Docker Desktop on Windows and Mac: https://docs.docker.com/get-docker/"
-  if (Sys.info()["sysname"] == "Linux") docker_instructions <- paste0(docker_instructions, "\n\nFor Linux, Docker must be available without sudo.\n\nThis may be achieved by installing rootless Docker (strongly recommended; run `curl -sSL https://get.docker.com/rootless | sh` and follow instructions) or creating a docker Unix group (security risk; https://docs.docker.com/engine/install/linux-postinstall/).\n\nThis function assumes rootless Docker and by default runs using host `unix:///run/user/1000/docker.sock`. This can be overridden using the 'host' argument.)")
+  if (Sys.info()["sysname"] == "Linux") docker_instructions <- paste0(docker_instructions, "\n\nFor Linux, Docker must be available without sudo.\n\nThis may be achieved by installing rootless Docker (strongly recommended; run `curl -sSL https://get.docker.com/rootless | sh` and follow instructions) or creating a docker Unix group (security risk; https://docs.docker.com/engine/install/linux-postinstall/).\n\nThis function assumes rootless Docker and by default runs using host `unix:///run/user/1000/docker.sock`. This can be overridden using the 'host' argument or by setting options(docker_host = 'path/to/host').)")
   if (Sys.info()["sysname"] == "Windows") docker_instructions <- paste0(docker_instructions, "\n\nFor Windows, a Python installation with the packages `docker` and `pypiwin32` and the R package `reticulate` are further required; see: https://github.com/richfitz/stevedore#windows-support")
   if (missing(host)) {
     if (Sys.info()["sysname"] == "Linux") {

@@ -28,7 +28,8 @@ webdriver_commands(webdriver, uuid)
 \item{host}{Optional. The URL of the Docker daemon. See parameter in
 \code{\link[stevedore]{docker_client}} for details/defaults. The default for
 Linux has been changed for this function: "unix:///run/user/1000/docker.sock"
-(i.e., rootless Docker).}
+(i.e., rootless Docker). Can be set in `options(docker_host = "path/to/host")`
+(this will override the provided `host` parameter).}
 
 \item{port}{Optional. The host port for Docker. If not provided, a random
 open port will be selected using \code{\link[httpuv]{randomPort}}.}
