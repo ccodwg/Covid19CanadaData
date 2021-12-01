@@ -16,33 +16,38 @@ NULL
 #' (this will override the provided `host` parameter).
 #' @param port Optional. The host port for Docker. If not provided, a random
 #' open port will be selected using \code{\link[httpuv]{randomPort}}.
+#' @param remoteServerAddr IP of the remote server. One of "localhost" (default)
+#' or "host-gateway" (for Docker-in-Docker). See parameter in \code{\link[RSelenium]{remoteDriver}}.
+#' Can be set in `options(docker_remoteServerAddr = c("localhost", "host-gateway"))`
+#' (this will override the provided `remoteServerAddr` parameter).
 #' @rdname webdriver
 #' @return The function \code{webdriver_get} returns an HTML object created by \code{\link[xml2]{read_html}}.
 #' @export
-webdriver_get <- function(uuid, host, port) {
+webdriver_get <- function(uuid, host, port, remoteServerAddr = "localhost") {
 
   # check that dataset really requires webdriver
   js <- get_dataset_arg(uuid, "js")
   if (is.na(js) | js == "False") {
     stop("This dataset does not need to be loaded using webdriver.")
   }
+  # verify remoteServerAddr
+  match.arg(remoteServerAddr, c("localhost", "host-gateway"), several.ok = FALSE)
   # get URL of dataset
   url <- get_dataset_url(uuid)
   # open webdriver
   if (!missing(host)) {
     if (!missing(port)) {
-      webdriver_open(url, host, port)
+      web <- webdriver_open(url, host, port, remoteServerAddr = remoteServerAddr)
     } else {
-      webdriver_open(url, host)
+      web <- webdriver_open(url, host, remoteServerAddr = remoteServerAddr)
     }
   } else {
     if (!missing(port)) {
-      webdriver_open(url, port = port)
+      web <- webdriver_open(url, port = port, remoteServerAddr = remoteServerAddr)
     } else {
-      webdriver_open(url)
+      web <- webdriver_open(url, remoteServerAddr = remoteServerAddr)
     }
   }
-  web <- webdriver_open(url)
   # run commands to drive webdriver
   webdriver_commands(web, uuid)
   # extract HTML
@@ -65,9 +70,22 @@ webdriver_get <- function(uuid, host, port) {
 #' (this will override the provided `host` parameter).
 #' @param port Optional. The host port for Docker. If not provided, a random
 #' open port will be selected using \code{\link[httpuv]{randomPort}}.
+#' @param remoteServerAddr IP of the remote server. One of "localhost" (default)
+#' or "host-gateway" (for Docker-in-Docker). See parameter in \code{\link[RSelenium]{remoteDriver}}.
+#' Can be set in `options(docker_remoteServerAddr = c("localhost", "host-gateway"))`
+#' (this will override the provided `remoteServerAddr` parameter).
 #' @rdname webdriver
 #' @export
-webdriver_open <- function(url, host, port) {
+webdriver_open <- function(url, host, port, remoteServerAddr = "localhost") {
+
+  # check if docker_remoteServerAddr is set in options (this will override the provided remoteServerAddr parameter)
+  docker_remoteServerAddr <- getOption("docker_remoteServerAddr")
+  if (!is.null(docker_remoteServerAddr)) {
+    remoteServerAddr <- docker_remoteServerAddr
+  }
+
+  # verify remoteServerAddr
+  match.arg(remoteServerAddr, c("localhost", "host-gateway"), several.ok = FALSE)
 
   # connect to Docker
   if (missing(host)) {
@@ -114,8 +132,11 @@ webdriver_open <- function(url, host, port) {
   ))
 
   # connect to headless Chrome
+  if (remoteServerAddr == "host-gateway") {
+    remoteServerAddr <- cnt$inspect()$network_settings$networks$bridge$gateway
+  }
   webdriver <- RSelenium::remoteDriver(
-    # remoteServerAddr = "localhost",
+    remoteServerAddr = remoteServerAddr,
     port = port,
     browserName = "chrome",
     extraCapabilities = ec)

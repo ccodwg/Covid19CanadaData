@@ -10,9 +10,9 @@
 \alias{webdriver_commands}
 \title{Functions for RSelenium webdriver}
 \usage{
-webdriver_get(uuid, host, port)
+webdriver_get(uuid, host, port, remoteServerAddr = "localhost")
 
-webdriver_open(url, host, port)
+webdriver_open(url, host, port, remoteServerAddr = "localhost")
 
 webdriver_close(webdriver, host)
 
@@ -33,6 +33,11 @@ Linux has been changed for this function: "unix:///run/user/1000/docker.sock"
 
 \item{port}{Optional. The host port for Docker. If not provided, a random
 open port will be selected using \code{\link[httpuv]{randomPort}}.}
+
+\item{remoteServerAddr}{IP of the remote server. One of "localhost" (default)
+or "host-gateway" (for Docker-in-Docker). See parameter in \code{\link[RSelenium]{remoteDriver}}.
+Can be set in `options(docker_remoteServerAddr = c("localhost", "host-gateway"))`
+(this will override the provided `remoteServerAddr` parameter).}
 
 \item{url}{The URL to navigate to.}
 
