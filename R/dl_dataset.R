@@ -10,14 +10,14 @@
 #' @param uuid The UUID of the dataset from datasets.json.
 #' @param file A character string specifying the location to write the specified
 #' dataset as a file (NULL by default, resulting in the dataset being returned
-#' as a data frame).
+#' as an R object.
 #' @param sep The separator to use when reading CSV files. Defaults to ",".
 #' @param sheet An integer specifying the sheet to return for an XLSX or XLS
 #' file (by default, reads sheet 1 with a warning).
 #' @param host Optional. The URL of the Docker daemon. See \code{\link[Covid19CanadaData]{webdriver}}.
 #' @param port Optional. The host port for Docker. If not provided, a random
 #' open port will be selected using \code{\link[httpuv]{randomPort}}.
-#' @return The specified dataset either as a data frame in R (the default) or
+#' @return The specified dataset either as an R object (the default) or
 #' written to a file by (by specifying the argument `file`).
 #' @examples
 #' \dontrun{
@@ -35,21 +35,27 @@ dl_dataset <- function(uuid,
                        host,
                        port) {
 
-  # get datasets.json
-  ds_list <- get_dataset_list()
+  # get list of datasets (datasets.json)
+  ds <- get_datasets()
+
+  # get list of uuids
+  uuids <- names(ds)
 
   # try to load dataset by uuid
-  if (uuid %in% ds_list$uuid) {
-    d <- ds_list[ds_list$uuid == uuid, ]
+  if (uuid %in% uuids) {
+    d <- ds[[uuid]]
     if (d$active != "True") {
       stop("Specified UUID exists but is flagged as inactive.")
     }
   } else {
-    stop("Specified UUID does not exist in datasets.json.")
+    stop("Specified UUID '", uuid, "' does not exist in datasets.json.")
   }
 
   # if URL is not static, get URL
-  url <- get_dataset_url(uuid)
+  url <- d$url
+  if (is.null(url)) {
+    url <- dl_dataset_dyn_url(uuid)
+  }
 
   # create curl handle
   h <- curl::new_handle()
@@ -60,13 +66,13 @@ dl_dataset <- function(uuid,
                           "Pragma" = "no-cache")
 
   # don't verify SSL certificate, if requested
-  if (!is.na(d$args$verify) & d$args$verify == "False") {
+  if (!is.null(d$args$verify) && d$args$verify == "False") {
     curl::handle_setopt(h, "ssl_verifypeer" = FALSE)
   }
 
   # add random number to url to prevent caching, if requested
-  if (!is.na(d$args$rand_url) & d$args$rand_url == "True") {
-    url <- paste0(url, "?randNum=", as.integer(Sys.time()))
+  if (!is.null(d$args$rand_url) && d$args$rand_url == "True") {
+    url <- paste0(url, "?randNum=", as.integer(lubridate::with_tz(Sys.time(), "America/Toronto")))
   }
 
   # download file or read into R
@@ -91,10 +97,10 @@ dl_dataset <- function(uuid,
     } else if (d$file_ext %in% c("jpg", "jpeg", "png", "tiff")) {
       dat <- magick::image_read(url)
     } else if (d$file_ext == "html") {
-      if (!is.na(d$args$js) & d$args$js == "True") {
+      if (!is.null(d$args$js) && d$args$js == "True") {
         dat <- webdriver_get(uuid)
       } else {
-        if (!is.na(d$args$verify) & d$args$verify == "False") {
+        if (!is.null(d$args$verify) && d$args$verify == "False") {
           # don't verify SSL certificate
           dat <- xml2::read_html(
             httr::content(

@@ -1,23 +1,30 @@
-#' Persistent storage for datasets.json
-ds_env <- new.env()
-
-#' Get datasets.json
+#' Get list of datasets
 #'
-#' @return A data frame containing the information from datasets.json.
+#' Calls `api.opencovid.ca/datasets` to return information about all available datasets.
+#'
+#' @returns A named list of datasets and their corresponding information.
 #' @export
-get_dataset_list <- function() {
-  if (!exists("ds_list", envir = ds_env)) {
-    # download and cache datasets.json
-    assign("ds_list", envir = ds_env,
-           ds_list <- suppressWarnings(
-             jsonlite::fromJSON("https://raw.githubusercontent.com/ccodwg/Covid19CanadaArchive/master/datasets.json") %>%
-               unlist(recursive = FALSE) %>%
-               dplyr::bind_rows()
-           ))
+get_datasets <- function() {
+  jsonlite::fromJSON("https://api.opencovid.ca/datasets", simplifyVector = FALSE)
+}
 
-  }
-  # return datasets.json
-  return(get("ds_list", envir = ds_env))
+#' Get information on a specific dataset by UUID
+#'
+#' Calls `api.opencovid.ca/datasets` to return information about a specific dataset.
+#'
+#' @param uuid The UUID of the dataset from datasets.json.
+#' @return A named list of available information on the dataset.
+#' @export
+get_uuid <- function(uuid) {
+  # construct API call
+  api_call <- paste0("https://api.opencovid.ca/datasets?uuid=", uuid)
+  # get information
+  tryCatch(
+    resp <- jsonlite::fromJSON(api_call),
+    error = function(e) stop("UUID not found.")
+  )
+  # return information
+  return(resp[[1]])
 }
 
 #' Get URL of dataset by UUID
@@ -28,9 +35,9 @@ get_dataset_list <- function() {
 #' @return The URL of the specified dataset.
 #' @export
 get_dataset_url <- function(uuid) {
-  ds_list <- get_dataset_list()
-  url <- ds_list[ds_list$uuid == uuid, "url"]
-  if (is.na(url)) {
+  resp <- get_uuid(uuid)
+  url <- resp$url
+  if (is.null(url)) {
     url <- dl_dataset_dyn_url(uuid)
   }
   return(url)
@@ -43,19 +50,16 @@ get_dataset_url <- function(uuid) {
 #' @return The named arg of the specified dataset.
 #' @export
 get_dataset_arg <- function(uuid, arg) {
-  ds_list <- get_dataset_list()
-  ds <- ds_list[ds_list$uuid == uuid, "args"]
+  resp <- get_uuid(uuid)
+  args <- resp$args
   tryCatch(
     {
-      d <- ds[[arg]]
-      if (is.na(d)) {
+      a <- args[[arg]]
+      if (is.null(a)) {
         cat("Argument", arg, "not specified for this UUID. Returning NA.", fill = TRUE)
+        return(NA)
       }
-      return(d)
-    },
-    error = function(e) {
-      cat("Argument", arg, "is invalid. Returning NA.", fill = TRUE)
-      return(NA)
+      return(a)
     }
   )
 }
@@ -103,7 +107,7 @@ dl_dataset_dyn_url <- function(uuid) {
     "83d1fa13-7fb3-4079-b3dc-5bc50c584fd3" = {
       rvest::html_attr(rvest::html_element(rvest::read_html('https://www.kflaph.ca/en/healthy-living/status-of-cases-in-kfla.aspx'), 'iframe'), 'src')
     },
-    stop("Specified UUID does not exist in dasets.json or does not have a dynamic URL.")
+    stop("Specified UUID does not exist in datasets.json or does not have a dynamic URL.")
   )
 }
 

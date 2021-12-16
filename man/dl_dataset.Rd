@@ -11,7 +11,7 @@ dl_dataset(uuid, file = NULL, sep = NULL, sheet = NULL, host, port)
 
 \item{file}{A character string specifying the location to write the specified
 dataset as a file (NULL by default, resulting in the dataset being returned
-as a data frame).}
+as an R object.}
 
 \item{sep}{The separator to use when reading CSV files. Defaults to ",".}
 
@@ -24,7 +24,7 @@ file (by default, reads sheet 1 with a warning).}
 open port will be selected using \code{\link[httpuv]{randomPort}}.}
 }
 \value{
-The specified dataset either as a data frame in R (the default) or
+The specified dataset either as an R object (the default) or
 written to a file by (by specifying the argument `file`).
 }
 \description{
