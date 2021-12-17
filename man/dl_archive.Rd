@@ -11,6 +11,7 @@ dl_archive(
   before,
   sep,
   sheet,
+  remove_duplicates = TRUE,
   add_live = FALSE,
   path = NULL
 )
@@ -33,10 +34,13 @@ Defaults to ",".}
 \item{sheet}{Optional. An integer or name specifying the sheet to return for
 an XLSX or XLS file (by default, reads sheet 1 with a warning).}
 
+\item{remove_duplicates}{Remove duplicate files from the sample after date
+filtering? Defaults to `TRUE`.}
+
 \item{add_live}{If the version of the dataset from today has not yet been
 archived (and the dataset is still active), append the live version of the
 file by calling \code{\link[Covid19CanadaData]{dl_dataset}}. Ignored when
-`file` is specified.}
+`file` is specified. Defaults to `FALSE`.}
 
 \item{path}{A character string specifying the file path to write the
 specified dataset as a file/files. This value is NULL by default, resulting

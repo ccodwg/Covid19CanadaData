@@ -4,7 +4,13 @@
 \alias{api_archive}
 \title{Call file archive index API}
 \usage{
-api_archive(uuid, date = NULL, after = NULL, before = NULL)
+api_archive(
+  uuid,
+  date = NULL,
+  after = NULL,
+  before = NULL,
+  remove_duplicates = TRUE
+)
 }
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}
@@ -17,6 +23,9 @@ from this date or later should be returned. Ignored if `date` is defined.}
 
 \item{before}{A character string in YYYY-MM-DD format specifying that data
 from this date or earlier should be returned. Ignored if `date` is defined.}
+
+\item{remove_duplicates}{Remove duplicate files from the sample after date
+filtering? Defaults to `TRUE`.}
 }
 \value{
 Archive file index matching specified UUID and date filters, as a data frame.
