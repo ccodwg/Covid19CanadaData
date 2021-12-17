@@ -55,14 +55,15 @@ dl_archive <- function(uuid,
   # retrieve URLs
   urls <- ind$file_url
 
+  # create curl handle
+  h <- curl::new_handle()
+
   # download files or read into R
   if (!is.null(path)) {
     # check add_live
     if (add_live) {
       warning("add_live is ignored when downloading files to disk.")
     }
-    # create curl handle
-    h <- curl::new_handle()
     # download files
     dat <- lapply(urls, FUN = function(x) {
       url <- x
@@ -88,8 +89,10 @@ dl_archive <- function(uuid,
       url <- x
       name <- basename(url)
       cat("Reading:", name, fill = TRUE)
+      tmp <- tempfile()
+      curl::curl_download(url, tmp, handle = h)
       Covid19CanadaData::read_dataset(
-        url,
+        url = tmp,
         d,
         sep = sep,
         sheet = sheet,
