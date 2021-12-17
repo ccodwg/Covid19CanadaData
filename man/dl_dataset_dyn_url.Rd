@@ -13,8 +13,8 @@ dl_dataset_dyn_url(uuid)
 The current URL of the specified dataset.
 }
 \description{
-Helper function for dl_dataset(): data-specific code to retrieve current URL
-of a dataset with dynamic URLs. Replicates code included in the "url_fun_r"
-field of datasets.json. This code is intentionally written to fit on a single
-line.
+Helper function for \code{\link[Covid19CanadaData]{dl_dataset}}:
+data-specific code to retrieve current URL of a dataset with dynamic URLs.
+Replicates code included in the "url_fun_r" field of datasets.json.
+This code is intentionally written to fit on a single line.
 }

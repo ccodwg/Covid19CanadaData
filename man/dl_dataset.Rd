@@ -4,24 +4,25 @@
 \alias{dl_dataset}
 \title{Download current version of a dataset catalogued in Covid19CanadaArchive}
 \usage{
-dl_dataset(uuid, file = NULL, sep = NULL, sheet = NULL, host, port)
+dl_dataset(uuid, sep, sheet, host, port, file = NULL)
 }
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}
 
-\item{file}{A character string specifying the location to write the specified
-dataset as a file (NULL by default, resulting in the dataset being returned
-as an R object.}
+\item{sep}{Optional. The separator to use when reading CSV files.
+Defaults to ",".}
 
-\item{sep}{The separator to use when reading CSV files. Defaults to ",".}
-
-\item{sheet}{An integer specifying the sheet to return for an XLSX or XLS
-file (by default, reads sheet 1 with a warning).}
+\item{sheet}{Optional. An integer or name specifying the sheet to return for
+an XLSX or XLS file (by default, reads sheet 1 with a warning).}
 
 \item{host}{Optional. The URL of the Docker daemon. See \code{\link[Covid19CanadaData]{webdriver}}.}
 
 \item{port}{Optional. The host port for Docker. If not provided, a random
 open port will be selected using \code{\link[httpuv]{randomPort}}.}
+
+\item{file}{A character string specifying the location to write the specified
+dataset as a file (NULL by default, resulting in the dataset being returned
+as an R object.}
 }
 \value{
 The specified dataset either as an R object (the default) or

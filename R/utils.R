@@ -66,10 +66,10 @@ get_dataset_arg <- function(uuid, arg) {
 
 #' Download current version of a dataset catalogued in Covid19CanadaArchive: Get dynamic URL
 #'
-#' Helper function for dl_dataset(): data-specific code to retrieve current URL
-#' of a dataset with dynamic URLs. Replicates code included in the "url_fun_r"
-#' field of datasets.json. This code is intentionally written to fit on a single
-#' line.
+#' Helper function for \code{\link[Covid19CanadaData]{dl_dataset}}:
+#' data-specific code to retrieve current URL of a dataset with dynamic URLs.
+#' Replicates code included in the "url_fun_r" field of datasets.json.
+#' This code is intentionally written to fit on a single line.
 #'
 #' @param uuid The UUID of the dataset from datasets.json.
 #' @return The current URL of the specified dataset.
@@ -109,6 +109,160 @@ dl_dataset_dyn_url <- function(uuid) {
     },
     stop("Specified UUID does not exist in datasets.json or does not have a dynamic URL.")
   )
+}
+
+#' Call file archive index API
+#'
+#' @param uuid The UUID of the dataset from datasets.json.
+#' @param date A character string in YYYY-MM-DD format specifying the date of
+#' data to return. Also accepts "latest" (the default), "first" and "all".
+#' @param after A character string in YYYY-MM-DD format specifying that data
+#' from this date or later should be returned. Ignored if `date` is defined.
+#' @param before A character string in YYYY-MM-DD format specifying that data
+#' from this date or earlier should be returned. Ignored if `date` is defined.
+#' @param remove_duplicates Remove duplicate files from the sample after date
+#' filtering? Defaults to `TRUE`.
+#' @return Archive file index matching specified UUID and date filters, as a data frame.
+#' @export
+api_archive <- function(uuid,
+                        date = NULL,
+                        after = NULL,
+                        before = NULL,
+                        remove_duplicates = TRUE) {
+
+  # check inputs
+  if (!is.null(date)) {
+    if (!date %in% c("latest", "first", "all") & is.na(lubridate::ymd(date, quiet = TRUE))) {
+      stop("Check format of parameter 'date'.")}}
+  if (!is.null(after)) {
+    if (is.na(lubridate::ymd(after, quiet = TRUE))) {
+      stop("Check format of parameter 'after'.")}}
+  if (!is.null(before)) {
+    if (is.na(lubridate::ymd(before, quiet = TRUE))) {
+      stop("Check format of parameter 'before'.")}}
+  match.arg(as.character(remove_duplicates), c(TRUE, FALSE), several.ok = FALSE)
+
+  # construct API call
+  api_call <- paste0("https://api.opencovid.ca/archive?uuid=", uuid)
+  api_call <- paste0(api_call, "&remove_duplicates=", remove_duplicates)
+  if (all(is.null(date), is.null(after), is.null(before))) {
+    cat("No date filters specified, returning latest file...", fill = TRUE)
+    api_call <- paste0(api_call, "&date=latest")
+  } else if (!is.null(date)) {
+    if (!is.null(after) | !is.null(before)) {
+      warning("Parameter 'date' is defined, ignoring parameters 'after' and 'before'.")
+    }
+      api_call <- paste0(api_call, "&date=", date)
+    } else {
+    if (!is.null(after)) {
+      api_call <- paste0(api_call, "&after=", after)
+    }
+    if (!is.null(before)) {
+      api_call <- paste0(api_call, "&before=", before)
+    }}
+
+  # return data frame from API
+  return(jsonlite::fromJSON(api_call))
+}
+
+#' Read dataset into R (based on file extension)
+#'
+#' Helper function for \code{\link[Covid19CanadaData]{dl_dataset}} and
+#' \code{\link[Covid19CanadaData]{dl_archive}}: determine file extension and
+#' fetch additional parameters (if necessary) in order to read the file into R.
+#'
+#' @param file The location of the file to read (may also be a URL).
+#' @param d Information on dataset from \code{\link[Covid19CanadaData]{get_uuid}}.
+#' @param sep See the parameter in \code{\link[Covid19CanadaData]{dl_dataset}}.
+#' @param sheet See the parameter in \code{\link[Covid19CanadaData]{dl_dataset}}.
+#' @param port See the parameter in \code{\link[Covid19CanadaData]{dl_dataset}}.
+#' @param host See the parameter in \code{\link[Covid19CanadaData]{dl_dataset}}.
+#' @return The specified dataset as an R object.
+#' @export
+read_dataset <- function(file,
+                         d,
+                         sep = NULL,
+                         sheet = NULL,
+                         port = NULL,
+                         host = NULL) {
+  # is file a URL or a file path?
+  is_url <- tryCatch(
+    {httr::HEAD(file, config = httr::config(ssl_verifypeer = FALSE)); is_url <- TRUE},
+    error = function(e) {is_url <- FALSE}
+  )
+  # get file extension
+  file_ext <- d$file_ext
+  if (file_ext %in% c("xlsx", "xls")) {
+    file_ext <- "excel"
+  } else if (file_ext %in% c("jpg", "jpeg", "png", "tiff")) {
+    file_ext <- "image"
+  }
+  # create curl handle
+  if (is_url) {
+    h <- curl::new_handle()
+    # add no-cache headers (not always respected)
+    curl::handle_setheaders(h,
+                            "Cache-Control" = "no-cache",
+                            "Pragma" = "no-cache")
+    # don't verify SSL certificate, if requested
+    if (!is.null(d$args$verify) && d$args$verify == "False") {
+      curl::handle_setopt(h, "ssl_verifypeer" = FALSE)}
+  }
+  # read dataset
+  switch(
+    file_ext,
+    "csv" = {
+      if (is.null(sep)) {
+        sep <- ","
+      }
+      dat <- utils::read.csv(file, stringsAsFactors = FALSE, sep = sep)
+    },
+    "json" = {
+      dat <- jsonlite::fromJSON(file)
+    },
+    "excel" = {
+      if (is.null(sheet)) {
+        warning("Sheet not specified, reading sheet 1 by default.")
+        sheet <- 1
+      }
+      if (is_url) {
+        url <- file
+        file <- tempfile(fileext = paste0(".", file_ext))
+        curl::curl_download(url, file, handle = h)
+      }
+      dat <- readxl::read_excel(file, sheet)
+    },
+    "image" = {
+      dat <- magick::image_read(file)
+    },
+    "html" = {
+      if (!is_url) {
+        # if HTML file, just read the HTML
+        dat <- xml2::read_html(file)
+      } else {
+        if (!is.null(d$args$js) && d$args$js == "True") {
+          if (is.null(host) & is.null(port)) {
+            dat <- webdriver_get(d$uuid)
+          } else if (!is.null(d$host) & is.null(port)) {
+            dat <- webdriver_get(d$uuid, host = host)
+          } else if (is.null(host) & !is.null(port)) {
+            dat <- webdriver_get(d$uuid, port = port)
+          } else {
+            dat <- webdriver_get(d$uuid)
+          }
+        } else {
+          url <- file
+          file <- tempfile(fileext = paste0(".", file_ext))
+          curl::curl_download(url,
+                              file, handle = h)
+          dat <- xml2::read_html(file)
+        }
+      }
+    },
+    stop("The file extension of this dataset is not supported for reading into R.")
+  )
+  # return data
+  return(dat)
 }
 
 #' Get province name abbreviations
