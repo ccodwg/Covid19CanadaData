@@ -2,6 +2,7 @@
 
 export("%>%")
 export(ccodwg_update_date)
+export(dl_archive)
 export(dl_ccodwg)
 export(dl_dataset)
 export(dl_dataset_dyn_url)
