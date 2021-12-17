@@ -111,8 +111,58 @@ dl_dataset_dyn_url <- function(uuid) {
   )
 }
 
-# Read dataset into R (based on file extension)
+#' Call file archive index API
+#'
+#' @param uuid The UUID of the dataset from datasets.json.
+#' @param date A character string in YYYY-MM-DD format specifying the date of
+#' data to return. Also accepts "latest" (the default), "first" and "all".
+#' @param after A character string in YYYY-MM-DD format specifying that data
+#' from this date or later should be returned. Ignored if `date` is defined.
+#' @param before A character string in YYYY-MM-DD format specifying that data
+#' from this date or earlier should be returned. Ignored if `date` is defined.
+#' @return Archive file index matching specified UUID and date filters, as a data frame.
+#' @export
+api_archive <- function(uuid,
+                        date = NULL,
+                        after = NULL,
+                        before = NULL) {
 
+  # check inputs
+  if (!is.null(date)) {
+    if (!date %in% c("latest", "first", "all") & is.na(lubridate::ymd(date, quiet = TRUE))) {
+      stop("Check format of parameter 'date'.")}}
+  if (!is.null(after)) {
+    if (is.na(lubridate::ymd(after, quiet = TRUE))) {
+      stop("Check format of parameter 'after'.")}}
+  if (!is.null(before)) {
+    if (is.na(lubridate::ymd(before, quiet = TRUE))) {
+      stop("Check format of parameter 'before'.")}}
+
+  # construct API call
+  api_call <- paste0("https://api.opencovid.ca/archive?uuid=", uuid)
+  if (!is.null(date)) {
+    if (!is.null(after) | !is.null(before)) {
+      warning("Parameter 'date' is defined, ignoring parameters 'after' and 'before'.")
+    }
+    if (date == "latest" | all(is.null(date), is.null(after), is.null(before))) {
+      api_call <- paste0(api_call, "&date=latest")
+    } else {
+      api_call <- paste0(api_call, "&date=", date)
+      }
+    } else {
+    if (!is.null(after)) {
+      api_call <- paste0(api_call, "&after=", after)
+    }
+    if (!is.null(before)) {
+      api_call <- paste0(api_call, "&before=", before)
+    }}
+
+  # return data frame from API
+  return(jsonlite::fromJSON(api_call))
+}
+
+#' Read dataset into R (based on file extension)
+#'
 #' Helper function for \code{\link[Covid19CanadaData]{dl_dataset}} and
 #' \code{\link[Covid19CanadaData]{dl_archive}}: determine file extension and
 #' fetch additional parameters (if necessary) in order to read the file into R.

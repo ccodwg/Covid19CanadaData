@@ -22,10 +22,10 @@ dl_archive(
 data to return. Also accepts "latest" (the default), "first" and "all".}
 
 \item{after}{A character string in YYYY-MM-DD format specifying that data
-from this date or later should be returned.}
+from this date or later should be returned. Ignored if `date` is defined.}
 
 \item{before}{A character string in YYYY-MM-DD format specifying that data
-from this date or earlier should be returned.}
+from this date or earlier should be returned. Ignored if `date` is defined.}
 
 \item{sep}{Optional. The separator to use when reading CSV files.
 Defaults to ",".}

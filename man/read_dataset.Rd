@@ -2,9 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{read_dataset}
 \alias{read_dataset}
-\title{Helper function for \code{\link[Covid19CanadaData]{dl_dataset}} and
-\code{\link[Covid19CanadaData]{dl_archive}}: determine file extension and
-fetch additional parameters (if necessary) in order to read the file into R.}
+\title{Read dataset into R (based on file extension)}
 \usage{
 read_dataset(url, d, sep = NULL, sheet = NULL, port = NULL, host = NULL)
 }

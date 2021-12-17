@@ -12,9 +12,9 @@
 #' @param date A character string in YYYY-MM-DD format specifying the date of
 #' data to return. Also accepts "latest" (the default), "first" and "all".
 #' @param after A character string in YYYY-MM-DD format specifying that data
-#' from this date or later should be returned.
+#' from this date or later should be returned. Ignored if `date` is defined.
 #' @param before A character string in YYYY-MM-DD format specifying that data
-#' from this date or earlier should be returned.
+#' from this date or earlier should be returned. Ignored if `date` is defined.
 #' @param add_live If the version of the dataset from today has not yet been
 #' archived (and the dataset is still active), append the live version of the
 #' file by calling \code{\link[Covid19CanadaData]{dl_dataset}}. Ignored when
@@ -41,25 +41,15 @@ dl_archive <- function(uuid,
   # get dataset information
   d <- get_uuid(uuid)
 
-  # construct API call
-  api_call <- paste0("https://api.opencovid.ca/archive?uuid=", uuid)
-  if (!missing(date) && date == "latest" | all(
-    missing(date),
-    missing(after),
-    missing(before))) {
-    api_call <- paste0(api_call, "&date=latest")
-  } else if (!missing(date)) {
-      api_call <- paste0(api_call, "&date=", date)
-      } else {
-        if (!missing(after)) {
-          api_call <- paste0(api_call, "&after=", after)
-          }
-        if (!missing(before)) {
-          api_call <- paste0(api_call, "&before=", before)
-        }}
+  # read date filters
+  date <- if (missing(date)) NULL else date
+  after <- if (missing(after)) NULL else after
+  before <- if (missing(before)) NULL else before
 
   # retrieve file index
-  ind <- jsonlite::fromJSON(api_call)
+  ind <- api_archive(uuid, date, after, before)
+
+  # retrieve URLs
   urls <- ind$file_url
 
   # download files or read into R
