@@ -15,10 +15,12 @@
 #' from this date or later should be returned. Ignored if `date` is defined.
 #' @param before A character string in YYYY-MM-DD format specifying that data
 #' from this date or earlier should be returned. Ignored if `date` is defined.
+#' @param remove_duplicates Remove duplicate files from the sample after date
+#' filtering? Defaults to `TRUE`.
 #' @param add_live If the version of the dataset from today has not yet been
 #' archived (and the dataset is still active), append the live version of the
 #' file by calling \code{\link[Covid19CanadaData]{dl_dataset}}. Ignored when
-#' `file` is specified.
+#' `file` is specified. Defaults to `FALSE`.
 #' @param sep Optional. The separator to use when reading CSV files.
 #' Defaults to ",".
 #' @param sheet Optional. An integer or name specifying the sheet to return for
@@ -35,6 +37,7 @@ dl_archive <- function(uuid,
                        before,
                        sep,
                        sheet,
+                       remove_duplicates = TRUE,
                        add_live = FALSE,
                        path = NULL) {
 
@@ -47,7 +50,7 @@ dl_archive <- function(uuid,
   before <- if (missing(before)) NULL else before
 
   # retrieve file index
-  ind <- api_archive(uuid, date, after, before)
+  ind <- api_archive(uuid, date, after, before, remove_duplicates)
 
   # retrieve URLs
   urls <- ind$file_url

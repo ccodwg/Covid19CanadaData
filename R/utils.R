@@ -120,12 +120,15 @@ dl_dataset_dyn_url <- function(uuid) {
 #' from this date or later should be returned. Ignored if `date` is defined.
 #' @param before A character string in YYYY-MM-DD format specifying that data
 #' from this date or earlier should be returned. Ignored if `date` is defined.
+#' @param remove_duplicates Remove duplicate files from the sample after date
+#' filtering? Defaults to `TRUE`.
 #' @return Archive file index matching specified UUID and date filters, as a data frame.
 #' @export
 api_archive <- function(uuid,
                         date = NULL,
                         after = NULL,
-                        before = NULL) {
+                        before = NULL,
+                        remove_duplicates = TRUE) {
 
   # check inputs
   if (!is.null(date)) {
@@ -137,9 +140,11 @@ api_archive <- function(uuid,
   if (!is.null(before)) {
     if (is.na(lubridate::ymd(before, quiet = TRUE))) {
       stop("Check format of parameter 'before'.")}}
+  match.arg(as.character(remove_duplicates), c(TRUE, FALSE), several.ok = FALSE)
 
   # construct API call
   api_call <- paste0("https://api.opencovid.ca/archive?uuid=", uuid)
+  api_call <- paste0(api_call, "&remove_duplicates=", remove_duplicates)
   if (!is.null(date)) {
     if (!is.null(after) | !is.null(before)) {
       warning("Parameter 'date' is defined, ignoring parameters 'after' and 'before'.")
