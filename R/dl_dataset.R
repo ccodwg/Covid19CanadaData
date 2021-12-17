@@ -11,9 +11,10 @@
 #' @param file A character string specifying the location to write the specified
 #' dataset as a file (NULL by default, resulting in the dataset being returned
 #' as an R object.
-#' @param sep The separator to use when reading CSV files. Defaults to ",".
-#' @param sheet An integer specifying the sheet to return for an XLSX or XLS
-#' file (by default, reads sheet 1 with a warning).
+#' @param sep Optional. The separator to use when reading CSV files.
+#' Defaults to ",".
+#' @param sheet Optional. An integer or name specifying the sheet to return for
+#' an XLSX or XLS file (by default, reads sheet 1 with a warning).
 #' @param host Optional. The URL of the Docker daemon. See \code{\link[Covid19CanadaData]{webdriver}}.
 #' @param port Optional. The host port for Docker. If not provided, a random
 #' open port will be selected using \code{\link[httpuv]{randomPort}}.
@@ -29,11 +30,11 @@
 #' }
 #' @export
 dl_dataset <- function(uuid,
-                       file = NULL,
-                       sep = NULL,
-                       sheet = NULL,
+                       sep,
+                       sheet,
                        host,
-                       port) {
+                       port,
+                       file = NULL) {
 
   # get list of datasets (datasets.json)
   ds <- get_datasets()
@@ -57,19 +58,6 @@ dl_dataset <- function(uuid,
     url <- dl_dataset_dyn_url(uuid)
   }
 
-  # create curl handle
-  h <- curl::new_handle()
-
-  # add no-cache headers (not always respected)
-  curl::handle_setheaders(h,
-                          "Cache-Control" = "no-cache",
-                          "Pragma" = "no-cache")
-
-  # don't verify SSL certificate, if requested
-  if (!is.null(d$args$verify) && d$args$verify == "False") {
-    curl::handle_setopt(h, "ssl_verifypeer" = FALSE)
-  }
-
   # add random number to url to prevent caching, if requested
   if (!is.null(d$args$rand_url) && d$args$rand_url == "True") {
     url <- paste0(url, "?randNum=", as.integer(lubridate::with_tz(Sys.time(), "America/Toronto")))
@@ -77,42 +65,23 @@ dl_dataset <- function(uuid,
 
   # download file or read into R
   if (!is.null(file)) {
+    # create curl handle
+    h <- curl::new_handle()
+    # add no-cache headers (not always respected)
+    curl::handle_setheaders(h,
+                            "Cache-Control" = "no-cache",
+                            "Pragma" = "no-cache")
+    # don't verify SSL certificate, if requested
+    if (!is.null(d$args$verify) && d$args$verify == "False") {
+      curl::handle_setopt(h, "ssl_verifypeer" = FALSE)}
+    # download file
     curl::curl_download(url, file, handle = h)
   } else {
-    if (d$file_ext == "csv") {
-      if (is.null(sep)) {
-        sep <- ","
-      }
-      dat <- utils::read.csv(url, stringsAsFactors = FALSE, sep = sep)
-    } else if (d$file_ext == "json") {
-      dat <- jsonlite::fromJSON(url)
-    } else if (d$file_ext %in% c("xlsx", "xls")) {
-      if (is.null(sheet)) {
-        warning("Sheet not specified, reading sheet 1 by default.")
-        sheet <- 1
-      }
-      tmp <- tempfile(fileext = paste0(".", d$file_ext))
-      utils::download.file(url, tmp)
-      dat <- readxl::read_excel(tmp, sheet)
-    } else if (d$file_ext %in% c("jpg", "jpeg", "png", "tiff")) {
-      dat <- magick::image_read(url)
-    } else if (d$file_ext == "html") {
-      if (!is.null(d$args$js) && d$args$js == "True") {
-        dat <- webdriver_get(uuid)
-      } else {
-        if (!is.null(d$args$verify) && d$args$verify == "False") {
-          # don't verify SSL certificate
-          dat <- xml2::read_html(
-            httr::content(
-              httr::GET(
-                url, config = httr::config(ssl_verifypeer = FALSE)), as = "text"))
-        } else {
-          dat <- xml2::read_html(url)
-        }
-      }
-    } else {
-      stop("The file extension of this dataset is not supported for reading into R.")
-    }
-    return(dat)
+    read_dataset(url,
+                 d,
+                 sep = if (missing(sep)) NULL else sep,
+                 sheet = if (missing(sheet)) NULL else sheet,
+                 port = if (missing(port)) NULL else port,
+                 host = if (missing(host)) NULL else host)
   }
 }

@@ -66,10 +66,10 @@ get_dataset_arg <- function(uuid, arg) {
 
 #' Download current version of a dataset catalogued in Covid19CanadaArchive: Get dynamic URL
 #'
-#' Helper function for dl_dataset(): data-specific code to retrieve current URL
-#' of a dataset with dynamic URLs. Replicates code included in the "url_fun_r"
-#' field of datasets.json. This code is intentionally written to fit on a single
-#' line.
+#' Helper function for \code{\link[Covid19CanadaData]{dl_dataset}}:
+#' data-specific code to retrieve current URL of a dataset with dynamic URLs.
+#' Replicates code included in the "url_fun_r" field of datasets.json.
+#' This code is intentionally written to fit on a single line.
 #'
 #' @param uuid The UUID of the dataset from datasets.json.
 #' @return The current URL of the specified dataset.
@@ -109,6 +109,91 @@ dl_dataset_dyn_url <- function(uuid) {
     },
     stop("Specified UUID does not exist in datasets.json or does not have a dynamic URL.")
   )
+}
+
+# Read dataset into R (based on file extension)
+
+#' Helper function for \code{\link[Covid19CanadaData]{dl_dataset}} and
+#' \code{\link[Covid19CanadaData]{dl_archive}}: determine file extension and
+#' fetch additional parameters (if necessary) in order to read the file into R.
+#'
+#' @param url The URL of the dataset.
+#' @param d Information on dataset from \code{\link[Covid19CanadaData]{get_uuid}}.
+#' @param sep See the parameter in \code{\link[Covid19CanadaData]{dl_dataset}}.
+#' @param sheet See the parameter in \code{\link[Covid19CanadaData]{dl_dataset}}.
+#' @param port See the parameter in \code{\link[Covid19CanadaData]{dl_dataset}}.
+#' @param host See the parameter in \code{\link[Covid19CanadaData]{dl_dataset}}.
+#' @return The specified dataset as an R object.
+#' @export
+read_dataset <- function(url,
+                         d,
+                         sep = NULL,
+                         sheet = NULL,
+                         port = NULL,
+                         host = NULL) {
+  # get file extension
+  file_ext <- d$file_ext
+  if (file_ext %in% c("xlsx", "xls")) {
+    file_ext <- "excel"
+  } else if (file_ext %in% c("jpg", "jpeg", "png", "tiff")) {
+    file_ext <- "image"
+  }
+  # read dataset
+  switch(
+    file_ext,
+    "csv" = {
+      if (is.null(sep)) {
+        sep <- ","
+      }
+      dat <- utils::read.csv(url, stringsAsFactors = FALSE, sep = sep)
+    },
+    "json" = {
+      dat <- jsonlite::fromJSON(url)
+    },
+    "excel" = {
+      if (is.null(sheet)) {
+        warning("Sheet not specified, reading sheet 1 by default.")
+        sheet <- 1
+      }
+      tmp <- tempfile(fileext = paste0(".", file_ext))
+      utils::download.file(url, tmp)
+      dat <- readxl::read_excel(tmp, sheet)
+    },
+    "image" = {
+      dat <- magick::image_read(url)
+    },
+    "html" = {
+      if (!is.null(d$args$js) && d$args$js == "True") {
+        if (is.null(host) & is.null(port)) {
+          dat <- webdriver_get(d$uuid)
+          } else if (!is.null(d$host) & is.null(port)) {
+          dat <- webdriver_get(d$uuid, host = host)
+          } else if (is.null(host) & !is.null(port)) {
+          dat <- webdriver_get(d$uuid, port = port)
+          } else {
+            dat <- webdriver_get(d$uuid)
+          }
+      } else {
+        if (!is.null(d$args$verify) && d$args$verify == "False") {
+          # don't verify SSL certificate
+          dat <- xml2::read_html(
+            httr::content(
+              httr::GET(
+                url, config = httr::config(ssl_verifypeer = FALSE)), as = "text"))
+        } else {
+          dat <- xml2::read_html(url)
+        }
+      }
+    },
+    # raw HTML
+    # force use of xml2::read_html (e.g., if downloading archived HTML rather than live website)
+    "html_raw" = {
+      dat <- xml2::read_html(url)
+    },
+    stop("The file extension of this dataset is not supported for reading into R.")
+  )
+  # return data
+  return(dat)
 }
 
 #' Get province name abbreviations
