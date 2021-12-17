@@ -4,10 +4,10 @@
 \alias{read_dataset}
 \title{Read dataset into R (based on file extension)}
 \usage{
-read_dataset(url, d, sep = NULL, sheet = NULL, port = NULL, host = NULL)
+read_dataset(file, d, sep = NULL, sheet = NULL, port = NULL, host = NULL)
 }
 \arguments{
-\item{url}{The URL of the dataset.}
+\item{file}{The location of the file to read (may also be a URL).}
 
 \item{d}{Information on dataset from \code{\link[Covid19CanadaData]{get_uuid}}.}
 

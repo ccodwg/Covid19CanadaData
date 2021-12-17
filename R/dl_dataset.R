@@ -65,19 +65,11 @@ dl_dataset <- function(uuid,
 
   # download file or read into R
   if (!is.null(file)) {
-    # create curl handle
-    h <- curl::new_handle()
-    # add no-cache headers (not always respected)
-    curl::handle_setheaders(h,
-                            "Cache-Control" = "no-cache",
-                            "Pragma" = "no-cache")
-    # don't verify SSL certificate, if requested
-    if (!is.null(d$args$verify) && d$args$verify == "False") {
-      curl::handle_setopt(h, "ssl_verifypeer" = FALSE)}
     # download file
+    h <- curl::new_handle()
     curl::curl_download(url, file, handle = h)
   } else {
-    read_dataset(url,
+    read_dataset(file = url,
                  d,
                  sep = if (missing(sep)) NULL else sep,
                  sheet = if (missing(sheet)) NULL else sheet,

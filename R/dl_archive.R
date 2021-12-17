@@ -79,11 +79,6 @@ dl_archive <- function(uuid,
     sep <- if (missing(sep)) NULL else sep
     sheet <- if (missing(sheet)) NULL else sheet
 
-    # ensure HTML files are correctly read in
-    if (d$file_ext == "html") {
-      d$file_ext <- "html_raw"
-    }
-
     # read files
     dat <- lapply(urls, FUN = function(x) {
       url <- x
@@ -92,7 +87,7 @@ dl_archive <- function(uuid,
       tmp <- tempfile()
       curl::curl_download(url, tmp, handle = h)
       Covid19CanadaData::read_dataset(
-        url = tmp,
+        file = tmp,
         d,
         sep = sep,
         sheet = sheet,
