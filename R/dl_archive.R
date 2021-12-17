@@ -29,7 +29,8 @@
 #' specified dataset as a file/files. This value is NULL by default, resulting
 #' in the dataset being returned as a list.
 #' @return A list containing the specified dataset(s) as R objects (the default)
-#' or written to a file/files by (by specifying the argument `path`).
+#' or written to a file/files by (by specifying the argument `path`). In the
+#' latter case, a vector of file paths is also returned invisibly.
 #' @export
 dl_archive <- function(uuid,
                        date,
@@ -72,6 +73,8 @@ dl_archive <- function(uuid,
       cat("Downloading:", file, fill = TRUE)
       curl::curl_download(url, file, handle = h)
     })
+    # return file path invisibly
+    return(invisible(unlist(dat)))
   } else {
     # read files into R
 
