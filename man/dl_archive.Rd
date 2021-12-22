@@ -48,7 +48,8 @@ in the dataset being returned as a list.}
 }
 \value{
 A list containing the specified dataset(s) as R objects (the default)
-or written to a file/files by (by specifying the argument `path`).
+or written to a file/files by (by specifying the argument `path`). In the
+latter case, a vector of file paths is also returned invisibly.
 }
 \description{
 Download the archived version of a dataset listed in datasets.json of
