@@ -27,6 +27,7 @@ Imports:
     magrittr,
     readxl,
     httr,
+    httpcache,
     rvest,
     stringr,
     xml2,

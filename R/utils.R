@@ -16,11 +16,11 @@ get_datasets <- function() {
 #' @return A named list of available information on the dataset.
 #' @export
 get_uuid <- function(uuid) {
-  # construct API call
-  api_call <- paste0("https://api.opencovid.ca/datasets?uuid=", uuid)
-  # get information
+  # API call
+  api_call <- httpcache::GET(paste0("https://api.opencovid.ca/datasets?uuid=", uuid))
+  # parse response
   tryCatch(
-    resp <- jsonlite::fromJSON(api_call),
+    resp <- jsonlite::fromJSON(httr::content(api_call, as = "text", encoding = "utf-8")),
     error = function(e) stop("UUID not found.")
   )
   # return information
