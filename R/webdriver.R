@@ -270,6 +270,26 @@ webdriver_wait_for_element <- function(webdriver, By, value, timeout) {
 webdriver_commands <- function(webdriver, uuid) {
   switch(
     uuid,
+    # NWT - communities tab
+    "8814f932-33ec-49ef-896d-d1779b2abea7" = {
+      # click on cases dropdown (when element is visible)
+      elm <- webdriver_wait_for_element(
+        webdriver,
+        "xpath",
+        "/html/body/div[1]/nav/div/ul/li[1]/a",
+        10)
+      # wait for page to load before clicking tab
+      Sys.sleep(5)
+      elm$clickElement()
+      # click communities tab
+      webdriver_wait_for_element(
+        webdriver,
+        "xpath",
+        "/html/body/div[1]/nav/div/ul/li[1]/ul/li[2]/a",
+        10)$clickElement()
+      # wait for page to load
+      Sys.sleep(get_dataset_arg(uuid, "wait"))
+    },
     # NWT - testing tab
     "66fbe91e-34c0-4f7f-aa94-cf6c14db0158" = {
       elm <- webdriver_wait_for_element(
@@ -283,9 +303,9 @@ webdriver_commands <- function(webdriver, uuid) {
       # wait for page to load
       Sys.sleep(get_dataset_arg(uuid, "wait"))
     },
-    # NWT - vaccine doses tab
-    "454de458-f7b4-4814-96a6-5a426f8c8c60" = {
-      # click on vaccine doses tab dropdown (when element is visible)
+    # NWT - vaccine coverage tab
+    "effdfd82-7c59-4f49-8445-f1f8f73b6dc2" = {
+      # click on vaccinations dropdown (when element is visible)
       elm <- webdriver_wait_for_element(
         webdriver,
         "xpath",
@@ -294,7 +314,27 @@ webdriver_commands <- function(webdriver, uuid) {
       # wait for page to load before clicking tab
       Sys.sleep(5)
       elm$clickElement()
-      # click tab
+      # click vaccine coverage tab
+      webdriver_wait_for_element(
+        webdriver,
+        "xpath",
+        "/html/body/div[1]/nav/div/ul/li[4]/ul/li[1]/a",
+        10)$clickElement()
+      # wait for page to load
+      Sys.sleep(get_dataset_arg(uuid, "wait"))
+    },
+    # NWT - vaccine doses tab
+    "454de458-f7b4-4814-96a6-5a426f8c8c60" = {
+      # click on vaccinations dropdown (when element is visible)
+      elm <- webdriver_wait_for_element(
+        webdriver,
+        "xpath",
+        "/html/body/div[1]/nav/div/ul/li[4]/a",
+        10)
+      # wait for page to load before clicking tab
+      Sys.sleep(5)
+      elm$clickElement()
+      # click vaccine doses tab
       webdriver_wait_for_element(
         webdriver,
         "xpath",
