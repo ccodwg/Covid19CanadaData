@@ -5,7 +5,16 @@
 #' @returns A named list of datasets and their corresponding information.
 #' @export
 get_datasets <- function() {
-  jsonlite::fromJSON("https://api.opencovid.ca/datasets", simplifyVector = FALSE)
+  # check if parsed results are cached
+  if (!httpcache::hitCache("https://api.opencovid.ca/datasets")) {
+    # API call
+    api_call <- httpcache::GET("https://api.opencovid.ca/datasets")
+    # parse results
+    resp <- jsonlite::fromJSON(httr::content(api_call, as = "text", encoding = "utf-8"), simplifyVector = FALSE)
+    # set parsed results as cached value
+    httpcache::setCache("https://api.opencovid.ca/datasets", resp)
+  }
+  return(httpcache::getCache("https://api.opencovid.ca/datasets"))
 }
 
 #' Get information on a specific dataset by UUID
@@ -16,15 +25,30 @@ get_datasets <- function() {
 #' @return A named list of available information on the dataset.
 #' @export
 get_uuid <- function(uuid) {
-  # API call
-  api_call <- httpcache::GET(paste0("https://api.opencovid.ca/datasets?uuid=", uuid))
-  # parse response
+  # first try to get parsed datasets list
   tryCatch(
-    resp <- jsonlite::fromJSON(httr::content(api_call, as = "text", encoding = "utf-8")),
-    error = function(e) stop("UUID not found.")
+    ds <- get_datasets(),
+    error = function(e) {
+      # fall back on direct API call for specific dataset
+      api_call <- httpcache::GET(paste0("https://api.opencovid.ca/datasets?uuid=", uuid))
+      # parse response
+      tryCatch(
+        {
+          resp <- jsonlite::fromJSON(httr::content(api_call, as = "text", encoding = "utf-8"))
+          resp <- resp[[1]]
+        },
+        error = function(e) stop("UUID not found.")
+      )
+    }
   )
+  # get information from parsed datasets list
+  if (uuid %in% names(ds)) {
+    resp <- ds[[uuid]]
+  } else {
+    stop("UUID not found.")
+  }
   # return information
-  return(resp[[1]])
+  return(resp)
 }
 
 #' Get URL of dataset by UUID
