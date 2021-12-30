@@ -3,6 +3,7 @@
 export("%>%")
 export(api_archive)
 export(ccodwg_update_date)
+export(create_curl_handle)
 export(dl_archive)
 export(dl_ccodwg)
 export(dl_dataset)

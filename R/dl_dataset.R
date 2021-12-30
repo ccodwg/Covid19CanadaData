@@ -65,9 +65,16 @@ dl_dataset <- function(uuid,
 
   # download file or read into R
   if (!is.null(file)) {
-    # download file
-    h <- curl::new_handle()
-    curl::curl_download(url, file, handle = h)
+    # check if file is a webpage that requires JS
+    if (d$args$js) {
+      # yes, use Selenium and write HTML
+      html_out <- webdriver_get(d$uuid)
+      xml2::write_html(html_out, file)
+    } else {
+      # no, just download file
+      h <- create_curl_handle(d)
+      curl::curl_download(url, file, handle = h)
+    }
   } else {
     read_dataset(file = url,
                  d,

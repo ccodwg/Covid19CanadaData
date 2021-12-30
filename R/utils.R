@@ -165,6 +165,27 @@ api_archive <- function(uuid,
   return(jsonlite::fromJSON(api_call))
 }
 
+#' Create curl handle with relevant options set
+#'
+#' Helper function for \code{\link[Covid19CanadaData]{dl_dataset}}.
+#'
+#' @param d Information on dataset from \code{\link[Covid19CanadaData]{get_uuid}}.
+#' @return A `curl` handle with relevant options set.
+#' @export
+create_curl_handle <- function(d) {
+  # create handle
+  h <- curl::new_handle()
+  # add no-cache headers (not always respected)
+  curl::handle_setheaders(h,
+                          "Cache-Control" = "no-cache",
+                          "Pragma" = "no-cache")
+  # don't verify SSL certificate, if requested
+  if (!is.null(d$args$verify) && d$args$verify == "False") {
+    curl::handle_setopt(h, "ssl_verifypeer" = FALSE)}
+  # return handle
+  return(h)
+}
+
 #' Read dataset into R (based on file extension)
 #'
 #' Helper function for \code{\link[Covid19CanadaData]{dl_dataset}} and
@@ -199,14 +220,7 @@ read_dataset <- function(file,
   }
   # create curl handle
   if (is_url) {
-    h <- curl::new_handle()
-    # add no-cache headers (not always respected)
-    curl::handle_setheaders(h,
-                            "Cache-Control" = "no-cache",
-                            "Pragma" = "no-cache")
-    # don't verify SSL certificate, if requested
-    if (!is.null(d$args$verify) && d$args$verify == "False") {
-      curl::handle_setopt(h, "ssl_verifypeer" = FALSE)}
+    h <- create_curl_handle(d)
   }
   # read dataset
   switch(
