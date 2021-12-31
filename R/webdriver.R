@@ -121,7 +121,7 @@ webdriver_open <- function(url, host, port, remoteServerAddr = "localhost") {
   # start Chrome
   cnt <- docker$container$run(img,
                               ports = paste0(port, ":4444"),
-                              detach = TRUE)
+                              detach = TRUE, rm = TRUE)
 
   # add extra capabilities
   ec <- list(chromeOptions = list(
@@ -185,7 +185,6 @@ webdriver_close <- function(webdriver, host) {
     {
       docker_image_id <- docker$container$list(filter = c("publish" = port))$id
       docker$container$get(docker_image_id)$stop()
-      docker$container$remove(docker_image_id)
     },
     error = function(e) {
       print(e)
