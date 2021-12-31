@@ -131,6 +131,9 @@ dl_dataset_dyn_url <- function(uuid) {
     "83d1fa13-7fb3-4079-b3dc-5bc50c584fd3" = {
       rvest::html_attr(rvest::html_element(rvest::read_html('https://www.kflaph.ca/en/healthy-living/status-of-cases-in-kfla.aspx'), 'iframe'), 'src')
     },
+    "fff9248e-fa24-4efb-ae04-000f3e5c815f" = {
+      paste0('https://www.princeedwardisland.ca', rvest::html_text2(rvest::html_elements(rvest::read_html('https://www.princeedwardisland.ca/en/search/site?f%5B0%5D=type%3Anews&f%5B1%5D=field_news_type%3A22&f%5B2%5D=field_department%3A612'), xpath='//a[contains(text(), \"new cases of COVID-19\")]/@href')[1]))
+    },
     stop("Specified UUID does not exist in datasets.json or does not have a dynamic URL.")
   )
 }
