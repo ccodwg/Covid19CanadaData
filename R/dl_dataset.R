@@ -66,7 +66,8 @@ dl_dataset <- function(uuid,
   # download file or read into R
   if (!is.null(file)) {
     # check if file is a webpage that requires JS
-    if (d$args$js) {
+    js <- d$args$js
+    if (!is.null(js) && js) {
       # yes, use Selenium and write HTML
       html_out <- webdriver_get(d$uuid)
       xml2::write_html(html_out, file)
