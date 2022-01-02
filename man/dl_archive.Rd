@@ -13,6 +13,7 @@ dl_archive(
   sheet,
   remove_duplicates = TRUE,
   add_live = FALSE,
+  overwrite = FALSE,
   path = NULL
 )
 }
@@ -41,6 +42,10 @@ filtering? Defaults to `TRUE`.}
 archived (and the dataset is still active), append the live version of the
 file by calling \code{\link[Covid19CanadaData]{dl_dataset}}. Ignored when
 `file` is specified. Defaults to `FALSE`.}
+
+\item{overwrite}{When saving to disk (by specifying the argument `path`),
+should existing files be overwritten? If `FALSE` (the default), only new
+files will be downloaded.}
 
 \item{path}{A character string specifying the file path to write the
 specified dataset as a file/files. This value is NULL by default, resulting

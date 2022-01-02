@@ -25,6 +25,9 @@
 #' Defaults to ",".
 #' @param sheet Optional. An integer or name specifying the sheet to return for
 #' an XLSX or XLS file (by default, reads sheet 1 with a warning).
+#' @param overwrite When saving to disk (by specifying the argument `path`),
+#' should existing files be overwritten? If `FALSE` (the default), only new
+#' files will be downloaded.
 #' @param path A character string specifying the file path to write the
 #' specified dataset as a file/files. This value is NULL by default, resulting
 #' in the dataset being returned as a list.
@@ -40,6 +43,7 @@ dl_archive <- function(uuid,
                        sheet,
                        remove_duplicates = TRUE,
                        add_live = FALSE,
+                       overwrite = FALSE,
                        path = NULL) {
 
   # get dataset information
@@ -65,11 +69,30 @@ dl_archive <- function(uuid,
     if (add_live) {
       warning("add_live is ignored when downloading files to disk.")
     }
+    # perform path expansion (so that existing files are properly recognized if using ~)
+    path <- path.expand(path)
+    # get file paths
+    file_paths <- file.path(path, basename(urls))
+    # if overwrite == FALSE, check for existing files
+    if (!overwrite) {
+      files <- list.files(path, full.names = TRUE)
+      # download new files only
+      file_n <- which(!file_paths %in% files)
+      # check if any files are left
+      if (length(file_n) == 0) {
+        warning("Aborting download: all requested files already exist at the specified path. Use overwrite=TRUE to download anyway.")
+        return(invisible(NULL))
+      } else if (length(file_n) < length(urls)) {
+        cat("Downloading new files only (use overwrite=TRUE to override this behaviour).", fill = TRUE)
+      }
+    } else {
+      # download all files
+      file_n <- seq_along(urls)
+    }
     # download files
-    dat <- lapply(urls, FUN = function(x) {
-      url <- x
-      name <- basename(url)
-      file <- file.path(path, name)
+    dat <- lapply(file_n, FUN = function(x) {
+      url <- urls[x]
+      file <- file_paths[x]
       cat("Downloading:", file, fill = TRUE)
       curl::curl_download(url, file, handle = h)
     })
