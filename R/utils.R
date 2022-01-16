@@ -134,6 +134,12 @@ dl_dataset_dyn_url <- function(uuid) {
     "fff9248e-fa24-4efb-ae04-000f3e5c815f" = {
       paste0('https://www.princeedwardisland.ca', rvest::html_text2(rvest::html_elements(rvest::read_html('https://www.princeedwardisland.ca/en/search/site?f%5B0%5D=type%3Anews&f%5B1%5D=field_news_type%3A22&f%5B2%5D=field_department%3A612'), xpath='//a[contains(text(), \"new cases of COVID-19\")]/@href')[1]))
     },
+    "25086ee8-6b82-4132-940f-85f3ea1d09e1" = {
+      grep('https://www.cihi.ca/sites/default/files/document/scan-data-tables-covid-19-intervention-update\\d*-en\\.xlsx', rvest::html_attr(rvest::html_elements(rvest::read_html('https://www.cihi.ca/en/covid-19-intervention-scan'), 'a'), 'href'), value = TRUE)[1]
+    },
+    "a2b4d3a5-2aae-41bc-be5f-423f11bb357a" = {
+      grep('https://www.cihi.ca/sites/default/files/document/scan-data-tables-covid-19-intervention-update\\d*-fr\\.xlsx', rvest::html_attr(rvest::html_elements(rvest::read_html('https://www.cihi.ca/fr/analyse-des-interventions-liees-a-la-covid-19'), 'a'), 'href'), value = TRUE)[1]
+    },
     stop("Specified UUID does not exist in datasets.json or does not have a dynamic URL.")
   )
 }
