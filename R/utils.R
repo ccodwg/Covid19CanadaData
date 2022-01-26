@@ -132,7 +132,7 @@ dl_dataset_dyn_url <- function(uuid) {
       rvest::html_attr(rvest::html_element(rvest::read_html('https://www.kflaph.ca/en/healthy-living/status-of-cases-in-kfla.aspx'), 'iframe'), 'src')
     },
     "fff9248e-fa24-4efb-ae04-000f3e5c815f" = {
-      paste0('https://www.princeedwardisland.ca', rvest::html_text2(rvest::html_elements(rvest::read_html('https://www.princeedwardisland.ca/en/search/site?f%5B0%5D=type%3Anews&f%5B1%5D=field_news_type%3A22&f%5B2%5D=field_department%3A612'), xpath='//a[contains(text(), \"new cases of COVID-19\")]/@href')[1]))
+      links <- rvest::html_elements(rvest::read_html('https://www.princeedwardisland.ca/en/search/site?f%5B0%5D=type%3Anews&f%5B1%5D=field_news_type%3A22&f%5B2%5D=field_department%3A612'), 'a'); linkstext <- rvest::html_text2(links); paste0('https://www.princeedwardisland.ca', rvest::html_attr(links[grep('new cases|recoveries|additional deaths|in hospital', linkstext)][1], 'href'))
     },
     "25086ee8-6b82-4132-940f-85f3ea1d09e1" = {
       grep('https://www.cihi.ca/sites/default/files/document/scan-data-tables-covid-19-intervention-update\\d*-en\\.xlsx', rvest::html_attr(rvest::html_elements(rvest::read_html('https://www.cihi.ca/en/covid-19-intervention-scan'), 'a'), 'href'), value = TRUE)[1]
