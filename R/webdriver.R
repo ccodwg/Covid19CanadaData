@@ -276,7 +276,7 @@ webdriver_commands <- function(webdriver, uuid) {
         webdriver,
         "xpath",
         "/html/body/div[1]/nav/div/ul/li[1]/a",
-        10)
+        15)
       # wait for page to load before clicking tab
       Sys.sleep(5)
       elm$clickElement()
@@ -285,7 +285,7 @@ webdriver_commands <- function(webdriver, uuid) {
         webdriver,
         "xpath",
         "/html/body/div[1]/nav/div/ul/li[1]/ul/li[2]/a",
-        10)$clickElement()
+        15)$clickElement()
       # wait for page to load
       Sys.sleep(get_dataset_arg(uuid, "wait"))
     },
@@ -296,7 +296,7 @@ webdriver_commands <- function(webdriver, uuid) {
         webdriver,
         "xpath",
         "/html/body/div[1]/nav/div/ul/li[3]/a",
-        10)
+        15)
       # wait for page to load before clicking tab
       Sys.sleep(5)
       elm$clickElement()
@@ -305,7 +305,7 @@ webdriver_commands <- function(webdriver, uuid) {
         webdriver,
         "xpath",
         "/html/body/div[1]/nav/div/ul/li[3]/ul/li[1]/a",
-        10)$clickElement()
+        15)$clickElement()
       # wait for page to load
       Sys.sleep(get_dataset_arg(uuid, "wait"))
     },
@@ -316,7 +316,7 @@ webdriver_commands <- function(webdriver, uuid) {
         webdriver,
         "xpath",
         "/html/body/div[1]/nav/div/ul/li[3]/a",
-        10)
+        15)
       # wait for page to load before clicking tab
       Sys.sleep(5)
       elm$clickElement()
@@ -325,7 +325,7 @@ webdriver_commands <- function(webdriver, uuid) {
         webdriver,
         "xpath",
         "/html/body/div[1]/nav/div/ul/li[3]/ul/li[2]/a",
-        10)$clickElement()
+        15)$clickElement()
       # wait for page to load
       Sys.sleep(get_dataset_arg(uuid, "wait"))
     },
