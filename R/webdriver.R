@@ -289,26 +289,13 @@ webdriver_commands <- function(webdriver, uuid) {
       # wait for page to load
       Sys.sleep(get_dataset_arg(uuid, "wait"))
     },
-    # NWT - testing tab
-    "66fbe91e-34c0-4f7f-aa94-cf6c14db0158" = {
-      elm <- webdriver_wait_for_element(
-        webdriver,
-        "xpath",
-        "/html/body/div[1]/nav/div/ul/li[2]/a",
-        10)
-      # wait for page to load before clicking tab
-      Sys.sleep(5)
-      elm$clickElement()
-      # wait for page to load
-      Sys.sleep(get_dataset_arg(uuid, "wait"))
-    },
     # NWT - vaccine coverage tab
     "effdfd82-7c59-4f49-8445-f1f8f73b6dc2" = {
       # click on vaccinations dropdown (when element is visible)
       elm <- webdriver_wait_for_element(
         webdriver,
         "xpath",
-        "/html/body/div[1]/nav/div/ul/li[4]/a",
+        "/html/body/div[1]/nav/div/ul/li[3]/a",
         10)
       # wait for page to load before clicking tab
       Sys.sleep(5)
@@ -317,7 +304,7 @@ webdriver_commands <- function(webdriver, uuid) {
       webdriver_wait_for_element(
         webdriver,
         "xpath",
-        "/html/body/div[1]/nav/div/ul/li[4]/ul/li[1]/a",
+        "/html/body/div[1]/nav/div/ul/li[3]/ul/li[1]/a",
         10)$clickElement()
       # wait for page to load
       Sys.sleep(get_dataset_arg(uuid, "wait"))
@@ -328,7 +315,7 @@ webdriver_commands <- function(webdriver, uuid) {
       elm <- webdriver_wait_for_element(
         webdriver,
         "xpath",
-        "/html/body/div[1]/nav/div/ul/li[4]/a",
+        "/html/body/div[1]/nav/div/ul/li[3]/a",
         10)
       # wait for page to load before clicking tab
       Sys.sleep(5)
@@ -337,7 +324,7 @@ webdriver_commands <- function(webdriver, uuid) {
       webdriver_wait_for_element(
         webdriver,
         "xpath",
-        "/html/body/div[1]/nav/div/ul/li[4]/ul/li[2]/a",
+        "/html/body/div[1]/nav/div/ul/li[3]/ul/li[2]/a",
         10)$clickElement()
       # wait for page to load
       Sys.sleep(get_dataset_arg(uuid, "wait"))
