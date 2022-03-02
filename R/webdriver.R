@@ -269,6 +269,19 @@ webdriver_wait_for_element <- function(webdriver, By, value, timeout) {
 webdriver_commands <- function(webdriver, uuid) {
   switch(
     uuid,
+    # Middlesex-London - cases tab
+    "b32a2f6b-7745-4bb1-9f9b-7ad0000d98a0" = {
+      # click on cases tab (when element is visible)
+      elm <- webdriver_wait_for_element(
+        webdriver,
+        "xpath",
+        "/html/body/div[1]/report-embed/div/div/div[1]/div/div/div/exploration-container/div/div/div/exploration-host/div/div/exploration/div/explore-canvas/div/div[2]/div/div[2]/div[2]/visual-container-repeat/visual-container[4]/transform/div/div[3]/div/visual-modern",
+        get_dataset_arg(uuid, "wait"))
+      # click tab
+      elm$clickElement()
+      # wait for page to load
+      Sys.sleep(5)
+    },
     # NWT - communities tab
     "8814f932-33ec-49ef-896d-d1779b2abea7" = {
       # click on cases dropdown (when element is visible)
