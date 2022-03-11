@@ -120,7 +120,7 @@ dl_dataset_dyn_url <- function(uuid) {
       paste0('https://www.gov.nu.ca', rvest::html_attr(rvest::html_elements(rvest::html_node(rvest::read_html('https://www.gov.nu.ca/health/information/covid-19-vaccination'), 'body'), 'img')[[2]], 'src'))
     },
     "7b7be246-cd65-4f35-b354-faa705cacecc" = {
-      d1 <- rvest::read_html('https://novascotia.ca/news/search/?dept=180'); d2 <- rvest::html_elements(d1, 'a'); sub('^\\.\\.', 'https://novascotia.ca/news', rvest::html_attr(d2[grep('New Cases of COVID-19|New Hospital Admissions|People in Hospital', rvest::html_text2(d2))][1], 'href'))
+      d1 <- rvest::read_html('https://novascotia.ca/news/search/?dept=180'); d2 <- rvest::html_elements(d1, 'a'); sub('^\\.\\.', 'https://novascotia.ca/news', rvest::html_attr(d2[grep('New Cases of COVID-19|New Hospital Admissions|People in Hospital|COVID-19 Weekly Data Report', rvest::html_text2(d2))][1], 'href'))
     },
     "2e7a5549-92ae-473d-a97a-7b8e0c1ddbbc" = {
       rvest::html_attr(rvest::html_element(rvest::read_html('https://www.bchu.org/ServicesWeProvide/InfectiousDiseases/Pages/coronavirus.aspx'), 'iframe'), 'src')
