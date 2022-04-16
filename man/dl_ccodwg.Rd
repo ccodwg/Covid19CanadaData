@@ -17,7 +17,8 @@ dl_ccodwg(
   extra = "true",
   dateonly = "false",
   verbose = FALSE,
-  file = NULL
+  file = NULL,
+  new_cols = FALSE
 )
 }
 \arguments{
@@ -60,6 +61,8 @@ update date or the full date and time of the update? Default = "false".}
 \item{file}{A character string specifying the location to write the specified
 dataset as a CSV file (NULL by default, resulting in the dataset being
 returned as a data frame).}
+
+\item{new_cols}{Convert to new column names? Default = FALSE.}
 }
 \value{
 The specified dataset either as a data frame in R (the default) or

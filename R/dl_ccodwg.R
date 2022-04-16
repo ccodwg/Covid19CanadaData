@@ -35,6 +35,7 @@
 #' @param file A character string specifying the location to write the specified
 #' dataset as a CSV file (NULL by default, resulting in the dataset being
 #' returned as a data frame).
+#' @param new_cols Convert to new column names? Default = FALSE.
 #' @return The specified dataset either as a data frame in R (the default) or
 #' written to a CSV file by (by specifying the argument `file`). If
 #' type = "version", the date and time the dataset were last updated is returned
@@ -84,7 +85,8 @@ dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
                       extra = "true",
                       dateonly = "false",
                       verbose = FALSE,
-                      file = NULL) {
+                      file = NULL,
+                      new_cols = FALSE) {
 
   # verify type argument
   match.arg(type,
@@ -168,6 +170,39 @@ dl_ccodwg <- function(type = c("timeseries", "individual", "summary",
   # print API call
   if (verbose) {
     cat(api_call, fill = TRUE)
+  }
+
+  # update column names
+  if (new_cols) {
+    col_names <- c(
+      province = "region",
+      health_region = "sub_region_1",
+      date_report = "date",
+      cases = "value",
+      cumulative_cases = "value_daily",
+      date_death_report = "date",
+      deaths = "value",
+      cumulative_deaths = "value_daily",
+      date_recovered = "date",
+      recovered = "value_daily",
+      cumulative_recovered = "value",
+      date_testing = "date",
+      testing = "value_daily",
+      cumulative_testing = "value",
+      date_active = "date",
+      active_cases_change = "value_daily",
+      active_cases = "value",
+      date_vaccine_administered = "date",
+      avaccine = "value_daily",
+      cumulative_avaccine = "value",
+      date_vaccine_distributed = "date",
+      dvaccine = "value_daily",
+      cumulative_dvaccine = "value",
+      date_vaccine_completed = "date",
+      cvaccine = "value_daily",
+      cumulative_cvaccine = "value"
+    )
+    names(dat) <- col_names[names(dat)]
   }
 
   # write data (if file is specified) else return data
