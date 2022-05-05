@@ -251,9 +251,13 @@ read_dataset <- function(file,
   } else if (file_ext %in% c("jpg", "jpeg", "png", "tiff")) {
     file_ext <- "image"
   }
-  # create curl handle
-  if (is_url) {
+  # create curl handle and download content from URL
+  # HTML content is handled elsewhere
+  if (is_url & file_ext != "html") {
+    url <- file
     h <- create_curl_handle(d)
+    file <- tempfile()
+    curl::curl_download(url, file, handle = h)
   }
   # read dataset
   switch(
@@ -271,11 +275,6 @@ read_dataset <- function(file,
       if (is.null(sheet)) {
         warning("Sheet not specified, reading sheet 1 by default.")
         sheet <- 1
-      }
-      if (is_url) {
-        url <- file
-        file <- tempfile(fileext = paste0(".", file_ext))
-        curl::curl_download(url, file, handle = h)
       }
       dat <- readxl::read_excel(file, sheet)
     },
@@ -299,9 +298,9 @@ read_dataset <- function(file,
           }
         } else {
           url <- file
-          file <- tempfile(fileext = paste0(".", file_ext))
-          curl::curl_download(url,
-                              file, handle = h)
+          h <- create_curl_handle(d)
+          file <- tempfile()
+          curl::curl_download(url, file, handle = h)
           dat <- xml2::read_html(file)
         }
       }
