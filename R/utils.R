@@ -141,6 +141,9 @@ dl_dataset_dyn_url <- function(uuid) {
     "a2b4d3a5-2aae-41bc-be5f-423f11bb357a" = {
       grep('https://www.cihi.ca/sites/default/files/document/scan-data-tables-covid-19-intervention-update\\d*-fr\\.xlsx', rvest::html_attr(rvest::html_elements(rvest::read_html('https://www.cihi.ca/fr/analyse-des-interventions-liees-a-la-covid-19'), 'a'), 'href'), value = TRUE)[1]
     },
+    "211a55f7-3050-48b6-9cf0-6a76595733c3" = {
+      paste0('https://www.gov.mb.ca/health/publichealth/surveillance/influenza/', rvest::html_attr(rvest::html_element(rvest::read_html('https://www.gov.mb.ca/health/publichealth/surveillance/influenza/index.html'), 'a[href*=week]'), 'href'))
+    },
     stop("Specified UUID does not exist in datasets.json or does not have a dynamic URL.")
   )
 }
