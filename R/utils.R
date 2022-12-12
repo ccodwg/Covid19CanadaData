@@ -318,6 +318,15 @@ read_dataset <- function(file,
   return(dat)
 }
 
+#' Get sheet names of an Excel file
+#'
+#' @param file The location of the file to read (may also be a URL).
+#' @return The sheet names of the Excel file as a character vector.
+#' @export
+get_sheet_names <- function(file) {
+  readxl::excel_sheets(file)
+}
+
 #' Get province name abbreviations
 #'
 #' @return A character vector of province name abbreviations.
