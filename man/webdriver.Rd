@@ -10,7 +10,7 @@
 \alias{webdriver_commands}
 \title{Functions for RSelenium webdriver}
 \usage{
-webdriver_get(uuid, host, port, remoteServerAddr = "localhost")
+webdriver_get(uuid, host, port, remoteServerAddr = "localhost", url, wait)
 
 webdriver_open(url, host, port, remoteServerAddr = "localhost")
 
@@ -20,7 +20,7 @@ docker_connect(host)
 
 webdriver_wait_for_element(webdriver, By, value, timeout)
 
-webdriver_commands(webdriver, uuid)
+webdriver_commands(webdriver, uuid, wait)
 }
 \arguments{
 \item{uuid}{The UUID of the dataset from datasets.json.}
@@ -39,7 +39,11 @@ or "host-gateway" (for Docker-in-Docker). See parameter in \code{\link[RSelenium
 Can be set in `options(docker_remoteServerAddr = c("localhost", "host-gateway"))`
 (this will override the provided `remoteServerAddr` parameter).}
 
-\item{url}{The URL to navigate to.}
+\item{url}{The URL to navigate to. If provided to \code{webdriver_get}, will
+override the selection for \code{uuid}.}
+
+\item{wait}{If set, override the default page loading time period for the UUID.
+Required if \code{url} is provided for \code{webdriver_get}.}
 
 \item{webdriver}{Selenium server object.}
 

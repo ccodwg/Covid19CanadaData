@@ -20,20 +20,33 @@ NULL
 #' or "host-gateway" (for Docker-in-Docker). See parameter in \code{\link[RSelenium]{remoteDriver}}.
 #' Can be set in `options(docker_remoteServerAddr = c("localhost", "host-gateway"))`
 #' (this will override the provided `remoteServerAddr` parameter).
+#' @param url The URL to navigate to. If provided to \code{webdriver_get}, will
+#' override the selection for \code{uuid}.
+#' @param wait If set, override the default page loading time period for the UUID.
+#' Required if \code{url} is provided for \code{webdriver_get}.
 #' @rdname webdriver
 #' @return The function \code{webdriver_get} returns an HTML object created by \code{\link[xml2]{read_html}}.
 #' @export
-webdriver_get <- function(uuid, host, port, remoteServerAddr = "localhost") {
-
-  # check that dataset really requires webdriver
-  js <- get_dataset_arg(uuid, "js")
-  if (is.na(js) | js == "False") {
-    stop("This dataset does not need to be loaded using webdriver.")
-  }
+webdriver_get <- function(uuid, host, port, remoteServerAddr = "localhost", url, wait) {
   # verify remoteServerAddr
   match.arg(remoteServerAddr, c("localhost", "host-gateway"), several.ok = FALSE)
-  # get URL of dataset
-  url <- get_dataset_url(uuid)
+  # check if URL is provided directly
+  if (!missing(url)) {
+    # verify wait was provided
+    if (missing(wait)) stop("Please provide a value for wait.")
+    # if UUID is also provided, report that it is being ignored
+    if (!missing(uuid)) cat("Provided UUID '", uuid, "'", " was ignored, going to URL instead: ", url, sep = "", fill = TRUE)
+  } else {
+    # retrieve URL from UUID
+    js <- get_dataset_arg(uuid, "js")
+    # check that dataset really requires webdriver
+    if (is.na(js) | js == "False") {
+      stop("This dataset does not need to be loaded using webdriver.")
+    } else {
+      # get URL of dataset
+      url <- get_dataset_url(uuid)
+    }
+  }
   # open webdriver
   if (!missing(host)) {
     if (!missing(port)) {
@@ -49,7 +62,11 @@ webdriver_get <- function(uuid, host, port, remoteServerAddr = "localhost") {
     }
   }
   # run commands to drive webdriver
-  webdriver_commands(web, uuid)
+  if (missing(wait)) {
+    webdriver_commands(web, uuid)
+  } else {
+    webdriver_commands(web, uuid, wait)
+  }
   # extract HTML
   ds <- web$getPageSource()
   # tidy up
@@ -62,7 +79,8 @@ webdriver_get <- function(uuid, host, port, remoteServerAddr = "localhost") {
   xml2::read_html(ds[[1]])
 }
 
-#' @param url The URL to navigate to.
+#' @param url The URL to navigate to. If provided to \code{webdriver_get}, will
+#' override the selection for \code{uuid}.
 #' @param host Optional. The URL of the Docker daemon. See parameter in
 #' \code{\link[stevedore]{docker_client}} for details/defaults. The default for
 #' Linux has been changed for this function: "unix:///run/user/1000/docker.sock"
@@ -264,9 +282,12 @@ webdriver_wait_for_element <- function(webdriver, By, value, timeout) {
 
 #' @param webdriver Selenium server object.
 #' @param uuid The UUID of the dataset from datasets.json.
+#' @param wait If set, override the default page loading time period for the UUID.
+#' Required if \code{url} is provided for \code{webdriver_get}.
 #' @rdname webdriver
 #' @export
-webdriver_commands <- function(webdriver, uuid) {
+webdriver_commands <- function(webdriver, uuid, wait) {
+  if (missing(uuid)) uuid <- ""
   switch(
     uuid,
     # NWT - communities tab
@@ -344,7 +365,11 @@ webdriver_commands <- function(webdriver, uuid) {
     },
     {
       # by default, just wait for page to load
-      Sys.sleep(get_dataset_arg(uuid, "wait"))
+      if (missing(wait)) {
+        # retrieve value for wait if override is not provided
+        wait <- get_dataset_arg(uuid, "wait")
+      }
+      Sys.sleep(wait)
     }
   )
 }
