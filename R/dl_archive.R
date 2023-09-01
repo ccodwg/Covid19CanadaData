@@ -122,7 +122,7 @@ dl_archive <- function(uuid,
     })
 
     # add file dates to data
-    names(dat) <- ind$file_date_true
+    names(dat) <- ind$file_date
 
     # add live file
     if (add_live) {
