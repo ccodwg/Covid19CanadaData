@@ -145,7 +145,7 @@ dl_dataset_dyn_url <- function(uuid) {
       paste0('https://www.gov.mb.ca/health/publichealth/surveillance/influenza/', rvest::html_attr(rvest::html_element(rvest::read_html('https://www.gov.mb.ca/health/publichealth/surveillance/influenza/index.html'), 'a[href*=week]'), 'href'))
     },
     "b22d4896-160d-432b-b02a-ba933d14a58a" = {
-      stringr::str_extract(as.character(rvest::html_node(rvest::read_html('https://www.saskatchewan.ca/government/health-care-administration-and-provider-resources/treatment-procedures-and-guidelines/emerging-public-health-issues/2019-novel-coronavirus/cases-and-risk-of-covid-19-in-saskatchewan'), 'body')), '(?<=href=\").*/download(?=\")')
+      stringr::str_extract(as.character(rvest::html_node(rvest::read_html('https://www.saskatchewan.ca/government/health-care-administration-and-provider-resources/treatment-procedures-and-guidelines/emerging-public-health-issues/2019-novel-coronavirus/cases-and-risk-of-covid-19-in-saskatchewan'), 'body')), '(?<=href=\")https://www.saskatchewan.ca/-/media/files/crisp-.*\\.pdf(?=\")')
     },
     stop("Specified UUID does not exist in datasets.json or does not have a dynamic URL.")
   )
