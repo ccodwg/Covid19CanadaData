@@ -219,6 +219,10 @@ create_curl_handle <- function(d) {
   curl::handle_setheaders(h,
                           "Cache-Control" = "no-cache",
                           "Pragma" = "no-cache")
+  # add user-agent, if requested
+  if (!is.null(d$args$user) && d$args$user == "True") {
+    curl::handle_setheaders(h, "User-Agent" = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0")
+  }
   # don't verify SSL certificate, if requested
   if (!is.null(d$args$verify) && d$args$verify == "False") {
     curl::handle_setopt(h, "ssl_verifypeer" = FALSE)}
