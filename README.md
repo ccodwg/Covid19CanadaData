@@ -8,12 +8,8 @@ The goal of Covid19CanadaData is to facilitate the acquisition of Canadian COVID
 
 * Live versions of Canadian COVID-19 datasets available on the Internet
 * The [Canadian COVID-19 Data Archive](https://github.com/ccodwg/Covid19CanadaArchive), which provides daily snapshots of COVID-19 data from various Canadian government sources (and select non-governmental sources), via live URLs (for current versions) and Amazon S3 (for archived versions). All datasets are catalogued in [datasets.json](https://github.com/ccodwg/Covid19CanadaArchive/blob/master/datasets.json)
-* The [COVID-19 Canada Open Data Working Group](https://opencovid.ca/) (CCODWG) daily [COVID-19 in Canada dataset](https://github.com/ccodwg/Covid19Canada) via the [JSON API](https://opencovid.ca/api/)
 
 `Covid19CanadaData` is part of [`Covid19CanadaETL`](https://github.com/ccodwg/Covid19CanadaETL), which is used to assemble the [`Covid19Canada`](https://github.com/ccodwg/Covid19Canada) dataset from the [COVID-19 Canada Open Data Working Group](https://opencovid.ca/). It is also used in the [Timeline of COVID-19 in Canada](https://github.com/ccodwg/CovidTimelineCanada), one component of the **[What Happened? COVID-19 in Canada](https://whathappened.coronavirus.icu/)** project.
-
-As a basic toolbox for accessing the COVID-19 Canada Open Data Working Group dataset, this package is a dependency for several interrelated projects,
-including [`Covid19CanadaDashboard`](https://github.com/ccodwg/Covid19CanadaDashboard).
 
 ## Installation
 
@@ -79,24 +75,4 @@ dl_archive(
   before = "2021-12-31",
   path = "~/Desktop/bc_files"
 )
-```
-
-### COVID-19 Canada Open Data Working Group dataset
-
-Below are some example commands for downloading data from the COVID-19 Canada Open Data Working Group dataset:
-
-``` r
-# download Covid-19 Canada Open Data Working Group data
-
-## get case time series for Toronto during the first half of March 2020
-dl_ccodwg("timeseries", "cases", loc = 3595, after = "2020-03-01", before = "2020-03-15")
-
-## get most recent Canada-wide summary
-dl_ccodwg("summary", loc = "canada")
-
-## get list of province names and population values
-dl_ccodwg("other", "prov")
-
-## get date the CCODWG dataset was last updated
-ccodwg_update_date()
 ```
