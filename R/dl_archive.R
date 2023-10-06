@@ -58,6 +58,7 @@ dl_archive <- function(uuid,
   ind <- api_archive(uuid, date, after, before, remove_duplicates)
 
   # retrieve URLs
+  files <- ind$file_name
   urls <- ind$file_url
 
   # create curl handle
@@ -72,7 +73,7 @@ dl_archive <- function(uuid,
     # perform path expansion (so that existing files are properly recognized if using ~)
     path <- path.expand(path)
     # get file paths
-    file_paths <- file.path(path, basename(urls))
+    file_paths <- file.path(path, files)
     # if overwrite == FALSE, check for existing files
     if (!overwrite) {
       files <- list.files(path, full.names = TRUE)
@@ -87,7 +88,7 @@ dl_archive <- function(uuid,
       }
     } else {
       # download all files
-      file_n <- seq_along(urls)
+      file_n <- seq_along(ind)
     }
     # download files
     dat <- lapply(file_n, FUN = function(x) {
@@ -106,9 +107,9 @@ dl_archive <- function(uuid,
     sheet <- if (missing(sheet)) NULL else sheet
 
     # read files
-    dat <- lapply(urls, FUN = function(x) {
-      url <- x
-      name <- basename(url)
+    dat <- lapply(1:nrow(ind), FUN = function(x) {
+      url <- urls[x]
+      name <- files[x]
       cat("Reading:", name, fill = TRUE)
       tmp <- tempfile()
       curl::curl_download(url, tmp, handle = h)
