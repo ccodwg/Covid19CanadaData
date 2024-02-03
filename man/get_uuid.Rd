@@ -13,5 +13,5 @@ get_uuid(uuid)
 A named list of available information on the dataset.
 }
 \description{
-Calls `api.opencovid.ca/datasets` to return information about a specific dataset.
+Get information on a specific dataset by UUID
 }

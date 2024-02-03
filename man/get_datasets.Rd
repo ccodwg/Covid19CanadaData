@@ -10,5 +10,5 @@ get_datasets()
 A named list of datasets and their corresponding information.
 }
 \description{
-Calls `api.opencovid.ca/datasets` to return information about all available datasets.
+Get list of datasets
 }
