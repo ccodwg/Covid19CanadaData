@@ -146,7 +146,7 @@ dl_dataset_dyn_url <- function(uuid) {
   )
 }
 
-#' Call file archive index API
+#' Call file archive index
 #'
 #' @param uuid The UUID of the dataset from datasets.json.
 #' @param date A character string in YYYY-MM-DD format specifying the date of
@@ -156,10 +156,11 @@ dl_dataset_dyn_url <- function(uuid) {
 #' @param before A character string in YYYY-MM-DD format specifying that data
 #' from this date or earlier should be returned. Ignored if `date` is defined.
 #' @param remove_duplicates Remove duplicate files from the sample after date
-#' filtering? Defaults to `TRUE`.
-#' @return Archive file index matching specified UUID and date filters, as a data frame.
+#' filtering? Defaults to `TRUE`. Ignored if a single date is requested.
+#' @return Archive file index matching specified UUID and date filters,
+#' as a data frame.
 #' @export
-api_archive <- function(uuid,
+index_archive <- function(uuid,
                         date = NULL,
                         after = NULL,
                         before = NULL,
@@ -177,27 +178,55 @@ api_archive <- function(uuid,
       stop("Check format of parameter 'before'.")}}
   match.arg(as.character(remove_duplicates), c(TRUE, FALSE), several.ok = FALSE)
 
-  # construct API call
-  api_call <- paste0("https://api.opencovid.ca/archive?uuid=", uuid)
-  api_call <- paste0(api_call, "&remove_duplicates=", remove_duplicates)
+  # get file index for UUID (from cache, if possible)
+  ind_url <- paste0("https://raw.githubusercontent.com/ccodwg/Covid19CanadaArchive-index/main/uuid/csv/", uuid, ".csv")
+  if (httpcache::hitCache(ind_url)) {
+    ind_raw <- httpcache::getCache(ind_url)
+  } else {
+    ind_raw <- utils::read.csv(ind_url, stringsAsFactors = FALSE)
+    ind_raw$file_date <- as.Date(ind_raw$file_date)
+    httpcache::setCache(ind_url, ind_raw)
+  }
+  ind <- ind_raw
+  # date and duplicate filtering
   if (all(is.null(date), is.null(after), is.null(before))) {
     cat("No date filters specified, returning latest file...", fill = TRUE)
-    api_call <- paste0(api_call, "&date=latest")
+    ind <- ind[ind$file_date == max(ind$file_date), ]
   } else if (!is.null(date)) {
     if (!is.null(after) | !is.null(before)) {
       warning("Parameter 'date' is defined, ignoring parameters 'after' and 'before'.")
     }
-      api_call <- paste0(api_call, "&date=", date)
+      switch(
+        date,
+        "latest" = {
+          ind <- ind[ind$file_date == max(ind$file_date), ]
+        },
+        "first" = {
+          ind <- ind[ind$file_date == min(ind$file_date), ]
+        },
+        "all" = {
+          # remove duplicates
+          if (remove_duplicates) {
+            ind <- ind[ind$file_duplicate == 0, ]
+          }
+        },
+        ind <- ind[ind$file_date == lubridate::ymd(date), ] # single date
+      )
     } else {
     if (!is.null(after)) {
-      api_call <- paste0(api_call, "&after=", after)
+      ind <- ind[ind$file_date >= lubridate::ymd(after), ]
     }
     if (!is.null(before)) {
-      api_call <- paste0(api_call, "&before=", before)
-    }}
+      ind <- ind[ind$file_date <= lubridate::ymd(before), ]
+    }
+      # remove duplicates
+      if (remove_duplicates) {
+        ind <- ind[ind$file_duplicate == 0, ]
+      }
+    }
 
-  # return data frame from API
-  return(jsonlite::fromJSON(api_call)$data)
+  # return index
+  return(ind)
 }
 
 #' Create curl handle with relevant options set

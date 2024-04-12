@@ -12,7 +12,6 @@ dl_archive(
   sep,
   sheet,
   remove_duplicates = TRUE,
-  add_live = FALSE,
   overwrite = FALSE,
   path = NULL
 )
@@ -36,12 +35,7 @@ Defaults to ",".}
 an XLSX or XLS file (by default, reads sheet 1 with a warning).}
 
 \item{remove_duplicates}{Remove duplicate files from the sample after date
-filtering? Defaults to `TRUE`.}
-
-\item{add_live}{If the version of the dataset from today has not yet been
-archived (and the dataset is still active), append the live version of the
-file by calling \code{\link[Covid19CanadaData]{dl_dataset}}. Ignored when
-`file` is specified. Defaults to `FALSE`.}
+filtering? Defaults to `TRUE`. Ignored if a single date is requested.}
 
 \item{overwrite}{When saving to disk (by specifying the argument `path`),
 should existing files be overwritten? If `FALSE` (the default), only new
@@ -61,7 +55,6 @@ Download the archived version of a dataset listed in datasets.json of
 Covid19CanadaArchive (https://github.com/ccodwg/Covid19CanadaArchive/blob/master/datasets.json).
 Data can either be imported into R (the default) or written to a file by
 specifying the `file` argument. Currently, only CSV, JSON, XLSX, XLS, image
-and HTML datasets are supported for reading into R. Live versions of active
-datasets may be optionally appended to the list of archived files. If no date
-filtering is specified, the latest file is returned by default.
+and HTML datasets are supported for reading into R. If no date filtering is
+specified, the latest file is returned by default.
 }

@@ -56,8 +56,7 @@ rvest::html_table(d4) # extract tables
 # returns a list of data frames named according to date
 Covid19CanadaData::dl_archive(
   uuid = "314c507d-7e48-476e-937b-965499f51e8e",
-  date = "latest", # latest archived version
-  add_live = TRUE # add live version of dataset
+  date = "latest" # latest archived version
 )
 
 # download BC Regional Health Authority cumulative summary JSON files
